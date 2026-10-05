@@ -51,12 +51,18 @@ public class MainMenu extends Gui {
         String homeText = home == null ? "未设置"
                 : home.getWorld().getName() + " " + (int) home.getX() + "," + (int) home.getY() + "," + (int) home.getZ();
 
+        int online = plugin.getGuildWarManager().onlineCount(guild);
+        int[] record = plugin.getGuildWarManager().getRecord(guild);
+        int warRemaining = plugin.getGuildWarManager().remainingToday(guild);
+        String warRecord = "<green>" + record[0] + " 胜</green> <red>" + record[1] + " 负</red> <gray>" + record[2] + " 平</gray>";
+
         Placeholders placeholders = Placeholders.of()
                 .put("guild", guild.getName())
                 .put("leader", guild.getLeaderName())
                 .put("level", guild.getLevel())
                 .put("members", guild.getMemberCount())
                 .put("max_members", plugin.getGuildManager().maxMembers(guild))
+                .put("online", online)
                 .put("active", guild.getActive())
                 .put("month_active", guild.getMonthActive())
                 .put("funds", TimeUtil.money(guild.getFunds()))
@@ -73,12 +79,18 @@ public class MainMenu extends Gui {
                 .put("contribution", TimeUtil.money(member.getContribution()))
                 .put("contribute_1", presets.size() > 0 ? TimeUtil.money(presets.get(0)) : "1000")
                 .put("contribute_2", presets.size() > 1 ? TimeUtil.money(presets.get(1)) : "10000")
-                .putRaw("war_status", plugin.getGuildWarManager().statusText(guild));
+                .putRaw("war_status", plugin.getGuildWarManager().statusText(guild))
+                .put("war_online", online)
+                .put("war_participants", plugin.getGuildWarManager().participantCount(guild))
+                .putRaw("war_record", warRecord)
+                .putRaw("war_daily_left", warRemaining < 0 ? "<green>无限制</green>"
+                        : (warRemaining > 0 ? "<yellow>" + warRemaining + "</yellow>" : "<red>已用完</red>"));
 
         button("main", "info", GuiUtil.def(4, "NETHER_STAR", "<yellow>{guild}</yellow>",
                 "<gray>会长: <yellow>{leader}</yellow></gray>",
                 "<gray>等级: <yellow>{level}</yellow></gray>",
                 "<gray>成员: <yellow>{members}</yellow>/<yellow>{max_members}</yellow></gray>",
+                "<gray>在线人口: <yellow>{online}</yellow> 人</gray>",
                 "<gray>活跃: <yellow>{active}</yellow></gray>",
                 "<gray>资金: <yellow>{funds}</yellow></gray>"), placeholders, null);
 
@@ -158,8 +170,10 @@ public class MainMenu extends Gui {
                 });
 
         button("main", "war", GuiUtil.def(31, "DIAMOND_SWORD", "<red>匹配公会战</red>",
-                        "<gray>与其他公会一决高下</gray>",
                         "<gray>当前状态: {war_status}</gray>",
+                        "<gray>可参战人口: <yellow>{war_online}</yellow> 人</gray>",
+                        "<gray>战绩: {war_record}</gray>",
+                        "<gray>今日剩余次数: {war_daily_left}</gray>",
                         "",
                         "<yellow>» 点击进入公会战</yellow>"),
                 placeholders, event -> plugin.getGuiManager().openGuildWar(viewer));

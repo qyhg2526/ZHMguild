@@ -92,15 +92,6 @@ public class MemberListMenu extends Gui {
         fillEmpty();
     }
 
-    private ItemStack applyHead(ItemStack item, java.util.UUID uuid) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta instanceof SkullMeta skullMeta) {
-            skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
-            item.setItemMeta(skullMeta);
-        }
-        return item;
-    }
-
     /** 判断职位是否可管理。 */
     public static boolean canManage(GuildRole self, GuildRole target) {
         return self.atLeast(GuildRole.VICE) && self.above(target);

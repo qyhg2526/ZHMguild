@@ -51,6 +51,19 @@ public abstract class Gui implements InventoryHolder {
         return viewer;
     }
 
+    /** 把物品的头部换成指定玩家(PLAYER_HEAD 生效)。 */
+    protected ItemStack applyHead(ItemStack item, java.util.UUID uuid) {
+        if (item == null || uuid == null) {
+            return item;
+        }
+        org.bukkit.inventory.meta.ItemMeta meta = item.getItemMeta();
+        if (meta instanceof org.bukkit.inventory.meta.SkullMeta skullMeta) {
+            skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(uuid));
+            item.setItemMeta(skullMeta);
+        }
+        return item;
+    }
+
     /** 打开菜单。 */
     public void open() {
         this.actions.clear();

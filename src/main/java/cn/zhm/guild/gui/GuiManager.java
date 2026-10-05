@@ -11,6 +11,8 @@ import cn.zhm.guild.gui.menu.MemberManageMenu;
 import cn.zhm.guild.gui.menu.NoGuildMenu;
 import cn.zhm.guild.gui.menu.SettingsMenu;
 import cn.zhm.guild.gui.menu.TopMenu;
+import cn.zhm.guild.gui.menu.WarArenaMenu;
+import cn.zhm.guild.gui.menu.WarRewardMenu;
 import cn.zhm.guild.model.Guild;
 import cn.zhm.guild.model.SortType;
 import cn.zhm.guild.util.Placeholders;
@@ -73,6 +75,14 @@ public class GuiManager {
 
     public void openGuildWar(Player player) {
         open(new GuildWarMenu(plugin, player));
+    }
+
+    public void openWarArena(Player player, int page) {
+        open(new WarArenaMenu(plugin, player, page));
+    }
+
+    public void openWarReward(Player player) {
+        open(new WarRewardMenu(plugin, player));
     }
 
     public void openTop(Player player, SortType sort, int page) {

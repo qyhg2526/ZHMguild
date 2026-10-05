@@ -23,6 +23,13 @@ import java.util.Optional;
  */
 public class GuiConfig {
 
+    /**
+     * gui.yml 结构版本。
+     * 每次调整菜单布局(尤其是 size 与按钮槽位)时 +1,
+     * 旧版本的 gui.yml 会被备份为 gui.yml.vN.bak 并重新生成, 避免旧布局导致按钮丢失。
+     */
+    public static final int CONFIG_VERSION = 2;
+
     private final ZHMguildPlugin plugin;
     private FileConfiguration cfg;
 
@@ -32,7 +39,22 @@ public class GuiConfig {
 
     public void load() {
         File file = new File(plugin.getDataFolder(), "gui.yml");
-        if (!file.exists()) {
+        if (file.exists()) {
+            YamlConfiguration existing = YamlConfiguration.loadConfiguration(file);
+            int version = existing.getInt("config-version", 1);
+            if (version < CONFIG_VERSION) {
+                File backup = new File(plugin.getDataFolder(), "gui.yml.v" + version + ".bak");
+                try {
+                    java.nio.file.Files.copy(file.toPath(), backup.toPath(),
+                            java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                    plugin.saveResource("gui.yml", true);
+                    plugin.getLogger().info("gui.yml 菜单布局已升级到 v" + CONFIG_VERSION
+                            + ", 旧文件已备份为 " + backup.getName());
+                } catch (Exception exception) {
+                    plugin.getLogger().warning("更新 gui.yml 失败, 将继续使用旧配置: " + exception.getMessage());
+                }
+            }
+        } else {
             plugin.saveResource("gui.yml", false);
         }
         cfg = YamlConfiguration.loadConfiguration(file);
@@ -96,19 +118,29 @@ public class GuiConfig {
 
     /** 全部菜单键。 */
     public static final List<String> MENUS = List.of(
-            "no-guild", "main", "guild-war", "guild-list", "members", "member-manage",
-            "applications", "settings", "top", "confirm");
+            "no-guild", "main", "guild-war", "war-arena", "war-reward", "guild-list", "members",
+            "member-manage", "applications", "settings", "top", "confirm");
 
     /** 模板与通用按钮路径。 */
     private static final List<String> TEMPLATES = List.of(
             "common.filler", "common.back", "common.close", "common.previous", "common.next",
-            "guild-list.guild-item", "members.member-item", "applications.application-item", "top.entry-item");
+            "guild-list.guild-item", "members.member-item", "applications.application-item",
+            "top.entry-item", "guild-war.ally-item", "guild-war.enemy-item", "guild-war.member-item",
+            "guild-war.empty-item", "war-arena.arena-item");
+
+    /** 自检结果。 */
+    public record ValidationResult(int checked, List<String> errors) {
+        public boolean ok() {
+            return errors.isEmpty();
+        }
+    }
 
     /**
-     * 自检 GUI 配置: 尝试构建全部按钮物品, 返回错误列表(为空表示配置正确)。
+     * 自检 GUI 配置: 尝试构建全部按钮物品, 返回校验数量与错误列表。
      */
-    public List<String> validate() {
+    public ValidationResult validate() {
         List<String> errors = new ArrayList<>();
+        int checked = 0;
         for (String menu : MENUS) {
             int size = size(menu, 54);
             ConfigurationSection items = cfg.getConfigurationSection(menu + ".items");
@@ -122,6 +154,7 @@ public class GuiConfig {
                 }
                 String path = menu + ".items." + key;
                 GuiItemDef def = GuiItemDef.from(section, -1);
+                checked++;
                 if (def.slot() < 0 || def.slot() >= size) {
                     errors.add(path + ": 槽位 " + def.slot() + " 超出菜单大小 " + size);
                 }
@@ -130,13 +163,14 @@ public class GuiConfig {
         }
         for (String path : TEMPLATES) {
             ConfigurationSection section = cfg.getConfigurationSection(path);
+            checked++;
             if (section == null) {
                 errors.add(path + ": 缺少配置");
                 continue;
             }
             buildCheck(errors, path, GuiItemDef.from(section, -1));
         }
-        return errors;
+        return new ValidationResult(checked, errors);
     }
 
     private void buildCheck(List<String> errors, String path, GuiItemDef def) {

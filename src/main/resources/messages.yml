@@ -217,6 +217,12 @@ war:
   arena-set: '<green>已设置场地 <yellow>{arena}</yellow> 的 <yellow>{part}</yellow></green> <gray>({world} {x}, {y}, {z})</gray>'
   status-header: '<gray>===== <yellow>公会战状态</yellow> =====</gray>'
   arena-header: '<gray>===== <yellow>公会战场地列表</yellow> =====</gray>'
+  arena-set-hint: '<gray>场地请由管理员站到目标位置后执行 <yellow>/zg setLocation mate &lt;场地名&gt; &lt;1|2|3&gt;</yellow></gray>'
+  arena-in-use: '<red>该场地正在被使用, 无法删除!</red>'
+  arena-not-ready: '<red>该场地尚未设置出生点!</red>'
+  arena-teleported: '<green>已传送到场地 <yellow>{arena}</yellow> 的红队出生点.</green>'
+  arena-deleted: '<green>已删除场地 <yellow>{arena}</yellow>.</green>'
+  arena-delete-confirm: '<yellow>确定要删除场地 <white>{arena}</white> 吗? 该操作不可撤销.</yellow>'
 
 # ---------------- 管理员 ----------------
 admin:

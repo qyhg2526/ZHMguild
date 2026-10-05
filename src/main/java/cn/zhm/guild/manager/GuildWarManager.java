@@ -513,10 +513,14 @@ public class GuildWarManager {
         if (winner == null) {
             giveReward(war, red, draw, false);
             giveReward(war, blue, draw, false);
+            recordResult(red, 2);
+            recordResult(blue, 2);
         } else {
             Guild loser = winner.getId() == red.getId() ? blue : red;
             giveReward(war, winner, win, true);
             giveReward(war, loser, lose, false);
+            recordResult(winner, 0);
+            recordResult(loser, 1);
         }
 
         broadcastWar(war, winner == null ? "war.result-draw" : "war.result-win", Placeholders.of()
@@ -712,6 +716,63 @@ public class GuildWarManager {
         }
         plugin.getDataConfig().set("war-daily." + guild.getId(), LocalDate.now() + ":" + (usedToday(guild) + 1));
         plugin.saveData();
+    }
+
+    // ---------------------------------------------------------
+    // 战绩统计
+    // ---------------------------------------------------------
+
+    /** 读取公会战绩, 返回 [胜, 负, 平]。 */
+    public int[] getRecord(Guild guild) {
+        int[] record = new int[3];
+        if (guild == null) {
+            return record;
+        }
+        String value = plugin.getDataConfig().getString("war-record." + guild.getId(), "");
+        String[] parts = value.split(":");
+        for (int index = 0; index < 3 && index < parts.length; index++) {
+            try {
+                record[index] = Integer.parseInt(parts[index].trim());
+            } catch (NumberFormatException exception) {
+                record[index] = 0;
+            }
+        }
+        return record;
+    }
+
+    /** 记录一场战绩, index: 0 = 胜, 1 = 负, 2 = 平。 */
+    private void recordResult(Guild guild, int index) {
+        if (guild == null || index < 0 || index > 2) {
+            return;
+        }
+        int[] record = getRecord(guild);
+        record[index]++;
+        plugin.getDataConfig().set("war-record." + guild.getId(),
+                record[0] + ":" + record[1] + ":" + record[2]);
+        plugin.saveData();
+    }
+
+    /** 公会战人口信息: 在线成员 / 参战成员 / 存活成员。 */
+    public int onlineCount(Guild guild) {
+        return onlineMembers(guild).size();
+    }
+
+    public int participantCount(Guild guild) {
+        GuildWar war = getWarOfGuild(guild);
+        if (war == null) {
+            return 0;
+        }
+        GuildWar.Side side = war.getSide(guild);
+        return side == null ? 0 : war.participantCount(side);
+    }
+
+    public int aliveCount(Guild guild) {
+        GuildWar war = getWarOfGuild(guild);
+        if (war == null) {
+            return 0;
+        }
+        GuildWar.Side side = war.getSide(guild);
+        return side == null ? 0 : war.aliveCount(side);
     }
 
     // ---------------------------------------------------------

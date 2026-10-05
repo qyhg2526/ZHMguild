@@ -5,7 +5,10 @@
 #    name/lore  : MiniMessage 格式, 支持 {xxx} 占位符
 #    slot       : 物品所在格子 (从 0 开始)
 #  修改后使用 /zg reload 生效, 可用 /zg debug 自检
+#  注意: config-version 请勿手动修改, 菜单布局变更时插件会自动备份并重新生成本文件
 # ============================================================
+
+config-version: 2
 
 # ---------------- 通用按钮 ----------------
 common:
@@ -82,6 +85,7 @@ main:
         - '<gray>会长: <yellow>{leader}</yellow></gray>'
         - '<gray>等级: <yellow>{level}</yellow></gray>'
         - '<gray>成员: <yellow>{members}</yellow><dark_gray>/</dark_gray><yellow>{max_members}</yellow></gray>'
+        - '<gray>在线人口: <yellow>{online}</yellow> 人</gray>'
         - '<gray>活跃: <yellow>{active}</yellow> <dark_gray>|</dark_gray> <gray>月度活跃: <yellow>{month_active}</yellow></gray>'
         - '<gray>资金: <yellow>{funds}</yellow></gray>'
         - '<gray>创建于: <yellow>{create_time}</yellow></gray>'
@@ -162,8 +166,10 @@ main:
       material: DIAMOND_SWORD
       name: '<red>匹配公会战</red>'
       lore:
-        - '<gray>与其他公会一决高下</gray>'
         - '<gray>当前状态: {war_status}</gray>'
+        - '<gray>可参战人口: <yellow>{war_online}</yellow> 人</gray>'
+        - '<gray>战绩: {war_record}</gray>'
+        - '<gray>今日剩余次数: {war_daily_left}</gray>'
         - ''
         - '<yellow>» 点击进入公会战</yellow>'
     top:
@@ -184,33 +190,66 @@ main:
         - '<yellow>» 点击退出</yellow>'
 
 # ---------------- 匹配公会战 ----------------
+# 布局: 第 4 格状态总览 | 9-17 我方阵容 | 19-25 信息按钮 | 27-35 敌方阵容 | 38/40/42 操作按钮
 guild-war:
   title: '<dark_gray>匹配公会战</dark_gray> <gray>»</gray> <yellow>{guild}</yellow>'
-  size: 27
+  size: 54
   items:
-    info:
+    status:
       slot: 4
       material: DIAMOND_SWORD
-      name: '<red>匹配公会战</red>'
+      name: '<red><bold>匹配公会战</bold></red>'
       lore:
         - '<gray>当前状态: {war_status}</gray>'
-        - '<gray>队列中公会: <yellow>{queue_size}</yellow></gray>'
+        - '<gray>匹配队列: <yellow>{queue_size}</yellow> 个公会</gray>'
         - '<gray>今日剩余次数: {daily_left} <dark_gray>({daily_used}/{daily_limit})</dark_gray></gray>'
-        - '<gray>可参战成员: <yellow>{online_members}</yellow><dark_gray>/</dark_gray><yellow>{max_per_side}</yellow></gray>'
+        - '<gray>准备 <yellow>{prepare_seconds}</yellow> 秒 <dark_gray>|</dark_gray> 战斗 <yellow>{battle_seconds}</yellow> 秒</gray>'
+    arena:
+      slot: 19
+      material: GRASS_BLOCK
+      name: '<green>公会战场地</green>'
+      lore:
+        - '<gray>可用场地: <yellow>{available_arenas}</yellow><dark_gray>/</dark_gray><yellow>{total_arenas}</yellow></gray>'
+        - '<gray>当前: {arenas}</gray>'
         - ''
-        - '<gray>场地: {arenas}</gray>'
+        - '<yellow>» 点击查看全部场地</yellow>'
+    rewards:
+      slot: 21
+      material: GOLD_INGOT
+      name: '<gold>奖励预览</gold>'
+      lore:
+        - '<gray>胜利: <yellow>{win_contribution}</yellow> 贡献 / <yellow>{win_funds}</yellow> 资金</gray>'
+        - '<gray>失败: <yellow>{lose_contribution}</yellow> 贡献</gray>'
+        - '<gray>每击杀: <yellow>{kill_contribution}</yellow> 贡献</gray>'
+        - ''
+        - '<yellow>» 点击查看完整奖励</yellow>'
+    record:
+      slot: 23
+      material: WRITABLE_BOOK
+      name: '<aqua>公会战绩</aqua>'
+      lore:
+        - '<green>胜: <yellow>{wins}</yellow></green>'
+        - '<red>负: <yellow>{loses}</yellow></red>'
+        - '<gray>平: <yellow>{draws}</yellow></gray>'
+    population:
+      slot: 25
+      material: PLAYER_HEAD
+      name: '<yellow>参战人口</yellow>'
+      lore:
+        - '<gray>在线成员: <yellow>{online_members}</yellow></gray>'
+        - '<gray>参战人数: <yellow>{participants}</yellow> 人 (每方最多 <yellow>{max_per_side}</yellow>)</gray>'
+        - '<gray>存活人数: <yellow>{alive}</yellow></gray>'
     match:
-      slot: 11
+      slot: 38
       material: LIME_CONCRETE
       name: '<green>开始匹配</green>'
       lore:
-        - '<gray>加入匹配队列</gray>'
-        - '<gray>队列满 2 个公会后自动开战</gray>'
-        - '<gray>准备阶段 <yellow>{prepare_seconds}</yellow> 秒, 战斗 <yellow>{battle_seconds}</yellow> 秒</gray>'
+        - '<gray>加入匹配队列, 满 2 个公会后自动开战</gray>'
+        - '<gray>当前在线可参战: <yellow>{online_members}</yellow> 人</gray>'
         - ''
         - '<yellow>» 点击开始匹配</yellow>'
     cancel:
-      slot: 13
+      slot: 40
       material: RED_CONCRETE
       name: '<red>取消匹配</red>'
       lore:
@@ -218,7 +257,7 @@ guild-war:
         - ''
         - '<yellow>» 点击取消匹配</yellow>'
     leave:
-      slot: 15
+      slot: 42
       material: IRON_DOOR
       name: '<yellow>离开战斗</yellow>'
       lore:
@@ -226,6 +265,86 @@ guild-war:
         - '<gray>战斗阶段退出视为被淘汰</gray>'
         - ''
         - '<yellow>» 点击离开</yellow>'
+  # 阵容中的空位填充物(模板, 无固定槽位)
+  empty-item:
+    material: GRAY_STAINED_GLASS_PANE
+    name: '<dark_gray>空位</dark_gray>'
+  # 我方 / 红队成员头像
+  ally-item:
+    material: PLAYER_HEAD
+    name: '<white>{player}</white> {alive}'
+    lore:
+      - '<gray>职位: {role}</gray>'
+      - '<gray>击杀: <yellow>{kills}</yellow></gray>'
+  # 敌方 / 蓝队成员头像
+  enemy-item:
+    material: PLAYER_HEAD
+    name: '<white>{player}</white> {alive}'
+    lore:
+      - '<gray>击杀: <yellow>{kills}</yellow></gray>'
+  # 未参战时显示的可参战成员
+  member-item:
+    material: PLAYER_HEAD
+    name: '<white>{player}</white> <green>可参战</green>'
+    lore:
+      - '<gray>职位: {role}</gray>'
+      - '<gray>贡献: <yellow>{contribution}</yellow></gray>'
+
+# ---------------- 公会战场地列表 ----------------
+war-arena:
+  title: '<dark_gray>公会战场地</dark_gray>'
+  size: 54
+  arena-item:
+    material: GRASS_BLOCK
+    name: '<yellow>{arena}</yellow>'
+    lore:
+      - '<gray>状态: {state}</gray>'
+      - '<gray>红队出生点: <yellow>{red}</yellow></gray>'
+      - '<gray>蓝队出生点: <yellow>{blue}</yellow></gray>'
+      - '<gray>观看点: <yellow>{spectate}</yellow></gray>'
+      - ''
+      - '<yellow>» 左键传送到红队出生点</yellow>'
+      - '<red>» 潜行左键删除该场地</red>'
+
+# ---------------- 公会战奖励预览 ----------------
+war-reward:
+  title: '<dark_gray>公会战奖励</dark_gray>'
+  size: 27
+  items:
+    win:
+      slot: 10
+      material: GOLDEN_APPLE
+      name: '<green>胜利奖励</green>'
+      lore:
+        - '<gray>个人贡献: <yellow>{contribution}</yellow></gray>'
+        - '<gray>公会活跃: <yellow>{guild_active}</yellow></gray>'
+        - '<gray>公会资金: <yellow>{guild_funds}</yellow></gray>'
+        - '<gray>额外指令: <yellow>{commands}</yellow></gray>'
+    lose:
+      slot: 12
+      material: BREAD
+      name: '<yellow>失败奖励</yellow>'
+      lore:
+        - '<gray>个人贡献: <yellow>{contribution}</yellow></gray>'
+        - '<gray>公会活跃: <yellow>{guild_active}</yellow></gray>'
+        - '<gray>公会资金: <yellow>{guild_funds}</yellow></gray>'
+        - '<gray>额外指令: <yellow>{commands}</yellow></gray>'
+    draw:
+      slot: 14
+      material: COOKIE
+      name: '<gray>平局奖励</gray>'
+      lore:
+        - '<gray>个人贡献: <yellow>{contribution}</yellow></gray>'
+        - '<gray>公会活跃: <yellow>{guild_active}</yellow></gray>'
+        - '<gray>公会资金: <yellow>{guild_funds}</yellow></gray>'
+        - '<gray>额外指令: <yellow>{commands}</yellow></gray>'
+    per-kill:
+      slot: 16
+      material: IRON_SWORD
+      name: '<red>击杀奖励</red>'
+      lore:
+        - '<gray>每击杀一名敌人额外获得:</gray>'
+        - '<gray>个人贡献: <yellow>{contribution}</yellow></gray>'
 
 # ---------------- 公会列表 ----------------
 guild-list:

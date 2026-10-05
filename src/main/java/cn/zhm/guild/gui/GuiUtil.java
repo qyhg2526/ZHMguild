@@ -40,4 +40,13 @@ public final class GuiUtil {
     public static List<String> list(String... values) {
         return new ArrayList<>(Arrays.asList(values));
     }
+
+    /** 把坐标描述成 "world x,y,z" 形式。 */
+    public static String describe(org.bukkit.Location location) {
+        if (location == null || location.getWorld() == null) {
+            return "未设置";
+        }
+        return location.getWorld().getName() + " "
+                + (int) location.getX() + "," + (int) location.getY() + "," + (int) location.getZ();
+    }
 }

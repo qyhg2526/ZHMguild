@@ -1,6 +1,7 @@
 package cn.zhm.guild.command;
 
 import cn.zhm.guild.ZHMguildPlugin;
+import cn.zhm.guild.config.GuiConfig;
 import cn.zhm.guild.manager.ArenaManager;
 import cn.zhm.guild.model.ApplicationType;
 import cn.zhm.guild.model.Arena;
@@ -987,12 +988,14 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
                 + "</yellow> | 变量: <yellow>" + (plugin.getPlaceholderHook() != null ? "PlaceholderAPI" : "未启用")
                 + "</yellow></gray>", sender));
 
-        List<String> errors = plugin.getGuiConfig().validate();
-        if (errors.isEmpty()) {
-            sender.sendMessage(plugin.getMessages().parse("<green>GUI 配置检查通过, 全部菜单按钮均可正常构建.</green>", sender));
+        GuiConfig.ValidationResult result = plugin.getGuiConfig().validate();
+        if (result.ok()) {
+            sender.sendMessage(plugin.getMessages().parse("<green>GUI 配置检查通过, 已校验 <yellow>"
+                    + result.checked() + "</yellow> 个按钮/模板, 全部可正常构建.</green>", sender));
         } else {
-            sender.sendMessage(plugin.getMessages().parse("<red>GUI 配置存在 " + errors.size() + " 个问题:</red>", sender));
-            for (String error : errors) {
+            sender.sendMessage(plugin.getMessages().parse("<red>GUI 配置存在 " + result.errors().size()
+                    + " 个问题 (已校验 " + result.checked() + " 项):</red>", sender));
+            for (String error : result.errors()) {
                 sender.sendMessage(plugin.getMessages().parse("<red>  - <gray>" + error + "</gray></red>", sender));
             }
         }
