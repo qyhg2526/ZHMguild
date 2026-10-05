@@ -1,0 +1,161 @@
+name: ZHMguild
+version: '${project.version}'
+main: cn.zhm.guild.ZHMguildPlugin
+api-version: '26.2'
+authors: [ZHM]
+description: ZHMguild - 一款功能完整的玩家公会插件，全程 GUI 操作，支持 SQLite / MySQL。
+website: https://ricedoc.handyplus.cn/wiki/PlayerGuild/
+softdepend:
+  - Vault
+  - PlaceholderAPI
+  - Multiverse-Core
+  - PlayerPoints
+load: POSTWORLD
+
+commands:
+  zhmguild:
+    description: ZHMguild 公会主命令
+    usage: /zhmguild help
+    aliases: [zg, gh, guild, gonghui]
+
+permissions:
+  zhmguild.*:
+    description: 拥有 ZHMguild 的所有权限
+    default: op
+    children:
+      zhmguild.use: true
+      zhmguild.admin: true
+      zhmguild.reload: true
+      zhmguild.create: true
+      zhmguild.create.color: true
+      zhmguild.spawn: true
+      zhmguild.setSpawn: true
+      zhmguild.up: true
+      zhmguild.leave: true
+      zhmguild.accept: true
+      zhmguild.deny: true
+      zhmguild.open: true
+      zhmguild.invitation: true
+      zhmguild.editGuildName: true
+      zhmguild.me: true
+      zhmguild.signIn: true
+      zhmguild.chat: true
+      zhmguild.contribute: true
+      zhmguild.view: true
+      zhmguild.give: true
+      zhmguild.take: true
+      zhmguild.set: true
+      zhmguild.refresh: true
+      zhmguild.dissolve: true
+      zhmguild.adminCreate: true
+      zhmguild.adminEditGuildName: true
+      zhmguild.adminUp: true
+      zhmguild.setRole: true
+      zhmguild.clear: true
+      zhmguild.reward: true
+      zhmguild.join: true
+      zhmguild.kick: true
+      zhmguild.transfer: true
+      zhmguild.notice: true
+  zhmguild.use:
+    description: 允许使用公会基础功能
+    default: true
+  zhmguild.admin:
+    description: 管理员总权限
+    default: op
+  zhmguild.reload:
+    description: 重载插件配置
+    default: op
+  zhmguild.create:
+    description: 创建公会
+    default: true
+  zhmguild.create.color:
+    description: 创建公会时公会名可使用颜色代码
+    default: op
+  zhmguild.spawn:
+    description: 传送回公会主城
+    default: true
+  zhmguild.setSpawn:
+    description: 设置公会主城
+    default: true
+  zhmguild.up:
+    description: 升级公会
+    default: true
+  zhmguild.leave:
+    description: 离开公会
+    default: true
+  zhmguild.accept:
+    description: 同意加入公会 / 同意公会战
+    default: true
+  zhmguild.deny:
+    description: 拒绝加入公会 / 拒绝公会战
+    default: true
+  zhmguild.open:
+    description: 打开公会列表
+    default: true
+  zhmguild.invitation:
+    description: 主动邀请玩家加入公会
+    default: true
+  zhmguild.editGuildName:
+    description: 修改公会名称
+    default: true
+  zhmguild.me:
+    description: 打开我的公会页面
+    default: true
+  zhmguild.signIn:
+    description: 公会每日签到
+    default: true
+  zhmguild.chat:
+    description: 使用公会聊天
+    default: true
+  zhmguild.contribute:
+    description: 向公会贡献
+    default: true
+  zhmguild.kick:
+    description: 踢出公会成员
+    default: true
+  zhmguild.transfer:
+    description: 转让会长
+    default: true
+  zhmguild.notice:
+    description: 修改公会公告
+    default: true
+  zhmguild.view:
+    description: 管理员查看信息
+    default: op
+  zhmguild.give:
+    description: 增加公会资金 / 活跃 / 玩家贡献
+    default: op
+  zhmguild.take:
+    description: 减少公会资金 / 活跃 / 玩家贡献
+    default: op
+  zhmguild.set:
+    description: 设置公会资金 / 活跃 / 玩家贡献
+    default: op
+  zhmguild.refresh:
+    description: 刷新公会数据
+    default: op
+  zhmguild.dissolve:
+    description: 强制解散公会
+    default: op
+  zhmguild.adminCreate:
+    description: 管理员直接创建公会
+    default: op
+  zhmguild.adminEditGuildName:
+    description: 管理员修改公会名称
+    default: op
+  zhmguild.adminUp:
+    description: 管理员强制升级公会
+    default: op
+  zhmguild.setRole:
+    description: 设置玩家职位
+    default: op
+  zhmguild.join:
+    description: 管理员指令加入公会
+    default: op
+  zhmguild.clear:
+    description: 清理数据
+    default: op
+  zhmguild.reward:
+    description: 发送奖励
+    default: op

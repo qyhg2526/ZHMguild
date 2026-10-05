@@ -1,0 +1,223 @@
+# ============================================================
+#  ZHMguild 语言文件
+#  格式: MiniMessage  https://docs.advntr.dev/minimessage/format.html
+#  占位符: {xxx}  例如 {player} {guild} {amount} {level}
+#  可用 PlaceholderAPI 变量: %xxx%  (需安装 PlaceholderAPI)
+# ============================================================
+
+prefix: '<gradient:#00d2ff:#3a7bd5><bold>ZHMguild</bold></gradient> <dark_gray>»</dark_gray> '
+
+# ---------------- 通用 ----------------
+common:
+  no-permission: '<red>你没有权限执行该操作!</red>'
+  player-only: '<red>该命令只能由玩家执行!</red>'
+  unknown-command: '<red>未知的子命令, 输入 <yellow>/zg help</yellow> 查看帮助.</red>'
+  usage: '<red>用法: <yellow>{usage}</yellow></red>'
+  player-not-found: '<red>找不到玩家 <yellow>{player}</yellow>!</red>'
+  guild-not-found: '<red>找不到公会 <yellow>{guild}</yellow>!</red>'
+  guild-name-taken: '<red>公会名 <yellow>{guild}</yellow> 已被占用!</red>'
+  guild-name-invalid: '<red>公会名长度必须在 <yellow>{min}</yellow> - <yellow>{max}</yellow> 之间!</red>'
+  guild-name-illegal: '<red>公会名包含非法字符!</red>'
+  not-in-guild: '<red>你还没有加入任何公会! 输入 <yellow>/zg open</yellow> 查看公会列表.</red>'
+  already-in-guild: '<red>你已经在公会 <yellow>{guild}</yellow> 中了!</red>'
+  target-not-in-guild: '<red>玩家 <yellow>{player}</yellow> 没有加入任何公会!</red>'
+  target-in-guild: '<red>玩家 <yellow>{player}</yellow> 已经加入了公会 <yellow>{guild}</yellow>!</red>'
+  guild-full: '<red>公会 <yellow>{guild}</yellow> 人数已满 (<yellow>{current}/{max}</yellow>)!</red>'
+  no-permission-in-guild: '<red>你在公会中的职位不足, 需要 <yellow>{role}</yellow> 及以上!</red>'
+  not-leader: '<red>只有会长才能执行该操作!</red>'
+  invalid-number: '<red>请输入一个有效的数字!</red>'
+  cooldown: '<red>操作过于频繁, 请等待 <yellow>{time}</yellow> 秒!</red>'
+  confirm-tip: '<yellow>请再次输入 <white>/zg confirm</white> 以确认该操作 (30 秒内有效)</yellow>'
+  confirmed: '<green>操作已确认!</green>'
+  cancelled: '<yellow>操作已取消.</yellow>'
+  no-pending-confirm: '<red>你没有待确认的操作.</red>'
+  reloaded: '<green>配置文件与语言文件已重载!</green>'
+  page-invalid: '<red>没有更多页面了!</red>'
+  input-cancelled: '<yellow>输入已取消.</yellow>'
+  input-expired: '<red>输入超时.</red>'
+
+# ---------------- 创建 / 解散 ----------------
+create:
+  success: '<green>恭喜! 公会 <yellow>{guild}</yellow> 创建成功, 你成为了会长.</green>'
+  broadcast: '<gradient:#00d2ff:#3a7bd5>全服公告</gradient> <dark_gray>»</dark_gray> <yellow>{player}</yellow> <gray>创建了公会</gray> <yellow>{guild}</yellow><gray>!</gray>'
+  need-money: '<red>创建公会需要 <yellow>{amount}</yellow> 金币, 你只有 <yellow>{has}</yellow>!</red>'
+  need-points: '<red>创建公会需要 <yellow>{amount}</yellow> 点券, 你只有 <yellow>{has}</yellow>!</red>'
+  need-item: '<red>创建公会需要 <yellow>{amount}</yellow> 个 <yellow>{item}</yellow>!</red>'
+  already-has-guild: '<red>你已经在公会中了, 无法创建新的公会!</red>'
+  name-taken: '<red>公会名 <yellow>{guild}</yellow> 已被占用!</red>'
+  input-name: '<yellow>请在聊天栏输入公会名称 (输入 <white>cancel</white> 取消, 30 秒内有效)</yellow>'
+  type-to-confirm: '<yellow>请在聊天栏输入 <white>{guild}</white> 以确认创建公会 (输入 <white>cancel</white> 取消)</yellow>'
+  confirm-gui: '<yellow>创建公会 <white>{guild}</white> 需要花费 <yellow>{money}</yellow> 金币, 确认创建吗?</yellow>'
+dissolve:
+  success: '<red>公会 <yellow>{guild}</yellow> 已解散!</red>'
+  broadcast: '<red>公会 <yellow>{guild}</yellow> 已被解散!</red>'
+  confirm: '<yellow>解散公会后所有数据将被清空且无法恢复! 请再次输入 <white>/zg dissolve</white> 确认.</yellow>'
+
+# ---------------- 加入 / 申请 / 邀请 ----------------
+join:
+  applied: '<green>已向公会 <yellow>{guild}</yellow> 提交加入申请, 请等待管理员审批.</green>'
+  already-applied: '<yellow>你已经申请过公会 <yellow>{guild}</yellow> 了!</yellow>'
+  max-applications: '<red>你最多只能同时申请 <yellow>{max}</yellow> 个公会!</red>'
+  notify-admin: '<yellow>{player}</yellow> <gray>申请加入公会</gray> <yellow>{guild}</yellow><gray>, 输入 <white>/zg accept</white> 处理.</gray>'
+  accepted: '<green>你已同意 <yellow>{player}</yellow> 加入公会!</green>'
+  accepted-target: '<green>恭喜! 你已加入公会 <yellow>{guild}</yellow>!</green>'
+  denied: '<yellow>你已拒绝 <yellow>{player}</yellow> 的加入申请.</yellow>'
+  denied-target: '<red>你的入会申请被公会 <yellow>{guild}</yellow> 拒绝.</red>'
+  nobody-applied: '<red>当前没有待处理的入会申请!</red>'
+  no-application: '<red>你没有向 <yellow>{guild}</yellow> 提交过申请!</red>'
+  guild-full: '<red>公会人数已满, 无法加入!</red>'
+invite:
+  sent: '<green>已邀请 <yellow>{player}</yellow> 加入公会 <yellow>{guild}</yellow>!</green>'
+  received: '<yellow>{player}</yellow> <gray>邀请你加入公会</gray> <yellow>{guild}</yellow><gray>! 输入 <white>/zg accept {guild}</white> 同意.</gray>'
+  already-invited: '<yellow>你已经邀请过该玩家了!</yellow>'
+  no-invite: '<red>你没有收到来自 <yellow>{guild}</yellow> 的邀请!</red>'
+  expired: '<red>该邀请已过期!</red>'
+  joined: '<green>你已加入公会 <yellow>{guild}</yellow>!</green>'
+
+# ---------------- 退出 / 踢出 ----------------
+leave:
+  success: '<yellow>你已退出公会 <yellow>{guild}</yellow>.</yellow>'
+  broadcast: '<yellow>{player}</yellow> <gray>退出了公会.</gray>'
+  leader-cannot-leave: '<red>你是会长, 请先转让会长或解散公会!</red>'
+  confirm: '<yellow>确定要退出公会 <white>{guild}</white> 吗? 请再次输入 <white>/zg leave</white> 确认.</yellow>'
+kick:
+  success: '<yellow>你已将 <yellow>{player}</yellow> 踢出公会!</yellow>'
+  target: '<red>你被公会 <yellow>{guild}</yellow> 踢出!</red>'
+  broadcast: '<yellow>{player}</yellow> <gray>被</gray> <yellow>{operator}</yellow> <gray>踢出了公会.</gray>'
+  cannot-kick-self: '<red>你不能踢出你自己!</red>'
+  cannot-kick-leader: '<red>你不能踢出会长!</red>'
+  role-too-low: '<red>你无法对职位高于或等于你的成员执行该操作!</red>'
+  target-not-member: '<red>该玩家不在你的公会中!</red>'
+  confirm-gui: '<yellow>确定要将 <white>{player}</white> 踢出公会吗?</yellow>'
+
+# ---------------- 公会设置 ----------------
+settings:
+  rename-input: '<yellow>请在聊天栏输入新的公会名称 (输入 <white>cancel</white> 取消)</yellow>'
+  rename-confirm: '<yellow>修改公会名称需要花费 <yellow>{money}</yellow> 金币, 确认修改吗?</yellow>'
+  renamed: '<green>公会名称已修改为 <yellow>{guild}</yellow>!</green>'
+  rename-no-money: '<red>你的金币不足, 修改公会名称需要 <yellow>{money}</yellow>!</red>'
+  icon-set: '<green>公会图标已设置为 <yellow>{item}</yellow>!</green>'
+  icon-hand-empty: '<red>请手持一个物品再点击!</red>'
+  pvp-on: '<green>已开启公会 PVP, 成员之间可以互相攻击.</green>'
+  pvp-off: '<yellow>已关闭公会 PVP, 成员之间无法互相攻击.</yellow>'
+
+# ---------------- 职位 ----------------
+role:
+  set: '<green>已将 <yellow>{player}</yellow> 的职位设置为 <yellow>{role}</yellow>!</green>'
+  notify: '<yellow>你的公会职位已被设置为 <yellow>{role}</yellow>.</yellow>'
+  promote: '<green>已将 <yellow>{player}</yellow> 提升为 <yellow>{role}</yellow>!</green>'
+  demote: '<green>已将 <yellow>{player}</yellow> 降级为 <yellow>{role}</yellow>!</green>'
+  already-highest: '<red>该成员已是最高职位!</red>'
+  already-lowest: '<red>该成员已是最低职位!</red>'
+  list-header: '<gray>公会职位: <white>会长</white> > <white>副会长</white> > <white>长老</white> > <white>成员</white></gray>'
+  transfer: '<green>你已将会长转让给 <yellow>{player}</yellow>!</green>'
+  transfer-target: '<yellow>你已成为公会 <yellow>{guild}</yellow> 的会长!</yellow>'
+  transfer-broadcast: '<yellow>{player}</yellow> <gray>成为了公会的新会长!</gray>'
+  transfer-confirm: '<yellow>确定要将会长转让给 <white>{player}</white> 吗? 请再次输入确认.</yellow>'
+
+# ---------------- 贡献 / 资金 / 活跃 ----------------
+contribute:
+  success: '<green>你向公会贡献了 <yellow>{amount}</yellow>, 获得 <yellow>{contribution}</yellow> 点贡献值!</green>'
+  min: '<red>单次贡献不得少于 <yellow>{min}</yellow>!</red>'
+  no-money: '<red>你的金币不足, 需要 <yellow>{amount}</yellow>!</red>'
+  broadcast: '<yellow>{player}</yellow> <gray>向公会贡献了</gray> <yellow>{amount}</yellow><gray>!</gray>'
+money:
+  add: '<green>已为公会 <yellow>{guild}</yellow> 增加 <yellow>{amount}</yellow> 资金.</green>'
+  take: '<green>已扣除公会 <yellow>{guild}</yellow> 的 <yellow>{amount}</yellow> 资金.</green>'
+  set: '<green>已将公会 <yellow>{guild}</yellow> 的资金设置为 <yellow>{amount}</yellow>.</green>'
+  display: '<gray>公会资金: <yellow>{amount}</yellow></gray>'
+active:
+  add: '<green>已为公会 <yellow>{guild}</yellow> 增加 <yellow>{amount}</yellow> 活跃.</green>'
+  take: '<green>已扣除公会 <yellow>{guild}</yellow> 的 <yellow>{amount}</yellow> 活跃.</green>'
+  set: '<green>已将公会 <yellow>{guild}</yellow> 的活跃设置为 <yellow>{amount}</yellow>.</green>'
+  display: '<gray>公会活跃: <yellow>{amount}</yellow></gray>'
+ore:
+  add: '<green>已为公会 <yellow>{guild}</yellow> 增加 <yellow>{amount}</yellow> 矿石.</green>'
+  take: '<green>已扣除公会 <yellow>{guild}</yellow> 的 <yellow>{amount}</yellow> 矿石.</green>'
+  set: '<green>已将公会 <yellow>{guild}</yellow> 的矿石设置为 <yellow>{amount}</yellow>.</green>'
+  display: '<gray>公会矿石: <yellow>{amount}</yellow></gray>'
+player:
+  add: '<green>已为玩家 <yellow>{player}</yellow> 增加 <yellow>{amount}</yellow> 贡献.</green>'
+  take: '<green>已扣除玩家 <yellow>{player}</yellow> 的 <yellow>{amount}</yellow> 贡献.</green>'
+  set: '<green>已将玩家 <yellow>{player}</yellow> 的贡献设置为 <yellow>{amount}</yellow>.</green>'
+
+# ---------------- 升级 ----------------
+up:
+  success: '<gradient:#00d2ff:#3a7bd5>公会升级啦!</gradient> <gray>公会</gray> <yellow>{guild}</yellow> <gray>已升到</gray> <yellow>{level}</yellow> <gray>级!</gray>'
+  max-level: '<red>公会已达到最高等级 <yellow>{level}</yellow>!</red>'
+  need-money: '<red>升级需要 <yellow>{amount}</yellow> 公会资金, 当前只有 <yellow>{has}</yellow>!</red>'
+  need-active: '<red>升级需要 <yellow>{amount}</yellow> 公会活跃, 当前只有 <yellow>{has}</yellow>!</red>'
+  broadcast: '<gradient:#00d2ff:#3a7bd5>全服公告</gradient> <dark_gray>»</dark_gray> <gray>公会</gray> <yellow>{guild}</yellow> <gray>升级到了</gray> <yellow>{level}</yellow> <gray>级!</gray>'
+
+# ---------------- 主城 ----------------
+home:
+  set: '<green>公会主城已设置到当前位置!</green>'
+  not-set: '<red>公会还没有设置主城!</red>'
+  teleporting: '<yellow>正在传送至公会主城, 请保持不动 <white>{time}</white> 秒...</yellow>'
+  teleported: '<green>已传送至公会主城!</green>'
+  moved: '<red>传送已取消, 因为你移动了!</red>'
+  cooldown: '<red>传送冷却中, 请等待 <yellow>{time}</yellow> 秒!</red>'
+  world-invalid: '<red>公会主城所在世界不存在!</red>'
+  deleted: '<green>公会主城已删除!</green>'
+
+# ---------------- 签到 ----------------
+signin:
+  success: '<green>签到成功! 获得 <yellow>{money}</yellow> 金币, <yellow>{contribution}</yellow> 贡献, 公会活跃 +<yellow>{active}</yellow></green>'
+  already: '<red>你今天已经签到过了, 明天再来吧!</red>'
+  streak: '<gray>你已经连续签到 <yellow>{days}</yellow> 天, 获得 <yellow>{bonus}x</yellow> 奖励加成!</gray>'
+  broadcast: '<yellow>{player}</yellow> <gray>完成了今日公会签到, 连续</gray> <yellow>{days}</yellow> <gray>天!</gray>'
+
+# ---------------- 公告 ----------------
+notice:
+  set: '<green>公会公告已更新!</green>'
+  broadcast: '<dark_gray>[</dark_gray><yellow>公会公告</yellow><dark_gray>]</dark_gray> <white>{notice}</white>'
+  empty: '<gray>该公会还没有设置公告.</gray>'
+  input: '<yellow>请在聊天栏输入新的公会公告 (输入 <white>cancel</white> 取消)</yellow>'
+
+# ---------------- 聊天 ----------------
+chat:
+  toggled-on: '<green>已开启公会聊天频道, 直接发送消息即可.</green>'
+  toggled-off: '<yellow>已关闭公会聊天频道.</yellow>'
+  spy-on: '<green>已开启公会聊天监听.</green>'
+  spy-off: '<yellow>已关闭公会聊天监听.</yellow>'
+  spy-format: '<dark_gray>[监听]</dark_gray> <gray>{guild}</gray> <white>{player}</white> <dark_gray>»</dark_gray> <white>{message}</white>'
+  no-guild: '<red>你还没有加入公会!</red>'
+
+# ---------------- 管理员 ----------------
+admin:
+  guild-created: '<green>已为 <yellow>{player}</yellow> 创建公会 <yellow>{guild}</yellow>.</green>'
+  guild-dissolved: '<green>已强制解散公会 <yellow>{guild}</yellow>.</green>'
+  name-edited: '<green>已将公会 <yellow>{old}</yellow> 重命名为 <yellow>{new}</yellow>.</green>'
+  refreshed: '<green>已刷新公会 <yellow>{guild}</yellow> 的数据.</green>'
+  cleared: '<green>已清理 <yellow>{type}</yellow> 数据, 共 <yellow>{count}</yellow> 条.</green>'
+  rewarded: '<green>已给予玩家 <yellow>{player}</yellow> <yellow>{amount}</yellow> {type}.</green>'
+  rewarded-target: '<green>你收到了来自管理员的奖励: <yellow>{amount}</yellow> {type}!</green>'
+  view-header: '<gray>===== <yellow>{guild}</yellow> 管理信息 =====</gray>'
+  join-forced: '<green>已将玩家 <yellow>{player}</yellow> 加入公会 <yellow>{guild}</yellow>.</green>'
+  level-set: '<green>已将公会 <yellow>{guild}</yellow> 等级设置为 <yellow>{level}</yellow>.</green>'
+  status: '<gray>当前状态: <yellow>{status}</yellow></gray>'
+
+# ---------------- 界面提示 ----------------
+gui:
+  no-guild-title: '<dark_gray>公会</dark_gray> <gray>»</gray> <yellow>未加入公会</yellow>'
+  guild-list-title: '<dark_gray>公会列表</dark_gray> <gray>»</gray> <yellow>{sort}</yellow>'
+  members-title: '<dark_gray>成员列表</dark_gray> <gray>»</gray> <yellow>{guild}</yellow>'
+  applications-title: '<dark_gray>入会申请</dark_gray> <gray>»</gray> <yellow>{guild}</yellow>'
+  settings-title: '<dark_gray>公会设置</dark_gray> <gray>»</gray> <yellow>{guild}</yellow>'
+  top-title: '<dark_gray>公会排行</dark_gray> <gray>»</gray> <yellow>{sort}</yellow>'
+  manage-title: '<dark_gray>成员管理</dark_gray> <gray>»</gray> <yellow>{player}</yellow>'
+  confirm-title: '<dark_gray>确认操作</dark_gray>'
+  info-title: '<dark_gray>公会信息</dark_gray> <gray>»</gray> <yellow>{guild}</yellow>'
+  page: '<gray>第 <yellow>{page}</yellow> / <yellow>{pages}</yellow> 页</gray>'
+
+# ---------------- 加入服务器提示 ----------------
+reminder:
+  has-guild: '<gray>你当前所在公会: <yellow>{guild}</yellow> <dark_gray>(</dark_gray><gray>{level} 级</gray><dark_gray>)</dark_gray></gray>'
+  no-guild: '<gray>你还没有加入公会, 输入 <yellow>/zg open</yellow> 查看公会列表!</gray>'
+  pending-applications: '<yellow>你有 <white>{count}</white> 条待处理的入会申请, 输入 <white>/zg accept</white> 处理.</yellow>'
+
+# ---------------- 帮助 ----------------
+help:
+  header: '<gradient:#00d2ff:#3a7bd5><bold>ZHMguild</bold></gradient> <gray>公会系统帮助</gray>'
+  line: '<yellow>{command}</yellow> <dark_gray>-</dark_gray> <gray>{desc}</gray>'
+  footer: '<gray>提示: 大部分操作都可以通过 <yellow>/zg open</yellow> 界面完成.</gray>'

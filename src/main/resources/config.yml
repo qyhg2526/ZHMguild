@@ -1,0 +1,191 @@
+# ============================================================
+#  ZHMguild - 玩家公会插件
+#  适用核心: Paper 26.2   (Spigot / Paper 系)
+#  文本格式: MiniMessage  https://docs.advntr.dev/minimessage/format.html
+#           支持 <red> <#ff0000> <gradient:#00d2ff:#3a7bd5> <bold> 等标签
+#  占位符  : 使用 {xxx} 形式, 例如 {player} {guild} {amount}
+# ============================================================
+
+# ---------------- 存储 ----------------
+storage:
+  # 可选: SQLITE / MYSQL
+  type: SQLITE
+  # 数据表前缀
+  table-prefix: zhm_
+  # 自动保存间隔(分钟), 0 表示关闭
+  auto-save-minutes: 10
+  mysql:
+    host: 127.0.0.1
+    port: 3306
+    database: zhmguild
+    username: root
+    password: ''
+    # 连接池大小
+    pool-size: 6
+    use-ssl: false
+    # 附加连接参数
+    parameters: 'useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai'
+  sqlite:
+    # 数据库文件, 位于插件数据目录
+    file: zhmguild.db
+
+# ---------------- 公会基础 ----------------
+guild:
+  # 公会名长度限制
+  name-min-length: 2
+  name-max-length: 12
+  # 是否允许公会名/称号使用颜色代码(需要权限 zhmguild.create.color)
+  allow-color-name: false
+  # 公会名是否区分大小写(是否允许同名不同大小写)
+  name-case-sensitive: false
+  # 玩家同时最多可申请的工会数量
+  max-applications: 5
+  # 申请 / 邀请有效期(小时), 0 = 永不过期
+  application-expire-hours: 168
+  # 默认最大成员数(未在 levels 中命中时使用)
+  default-max-members: 10
+
+  # 创建公会消耗
+  create:
+    money: 1000.0
+    # 需要 PlayerPoints 点券
+    points: 0
+    # 需要的物品, 格式: 材质:数量
+    items: []
+    # 创建冷却(秒)
+    cooldown: 60
+
+  # 解散公会是否返还资金
+  dissolve-refund: false
+
+  # 修改公会名称花费
+  rename-cost: 5000.0
+
+  # 贡献设置
+  contribute:
+    # 单次最少贡献
+    min: 100.0
+    # 界面上的快捷贡献按钮
+    presets:
+      - 1000.0
+      - 10000.0
+      - 100000.0
+
+# ---------------- 职位显示名 ----------------
+roles:
+  LEADER: '<red><bold>会长</bold></red>'
+  VICE: '<gold>副会长</gold>'
+  ELDER: '<yellow>长老</yellow>'
+  MEMBER: '<gray>成员</gray>'
+
+# ---------------- 公会等级 ----------------
+# 每个等级可单独配置: 最大成员数 / 升级所需资金与活跃 / 公会称号
+# 未列出的等级会沿用最后一个等级的配置
+levels:
+  default-tag: '<gray>[{guild}]</gray>'
+  1:
+    max-members: 10
+    up-money: 5000.0
+    up-active: 200
+    tag: '<gray>[新芽]</gray>'
+  2:
+    max-members: 15
+    up-money: 12000.0
+    up-active: 500
+    tag: '<white>[小有名气]</white>'
+  3:
+    max-members: 20
+    up-money: 25000.0
+    up-active: 1200
+    tag: '<green>[声名鹊起]</green>'
+  4:
+    max-members: 30
+    up-money: 50000.0
+    up-active: 2500
+    tag: '<aqua>[威震一方]</aqua>'
+  5:
+    max-members: 40
+    up-money: 100000.0
+    up-active: 5000
+    tag: '<light_purple>[名门大派]</light_purple>'
+  6:
+    max-members: 50
+    up-money: 200000.0
+    up-active: 10000
+    tag: '<gold>[传奇公会]</gold>'
+  # 最高等级, 到达后无法继续升级
+  max-level: 6
+
+# ---------------- 公会主城 ----------------
+home:
+  # 传送冷却(秒)
+  teleport-cooldown: 30
+  # 传送读条(秒), 0 = 立即传送
+  teleport-delay: 3
+  # 读条期间移动是否取消
+  cancel-on-move: true
+  # 设置主城需要的权限等级(LEADER / VICE / ELDER)
+  set-permission: 'VICE'
+
+# ---------------- 每日签到 ----------------
+sign-in:
+  # 基础奖励
+  money: 200.0
+  # 点券(需要 PlayerPoints)
+  points: 0
+  # 个人贡献
+  contribution: 10.0
+  # 公会活跃
+  guild-active: 20
+  # 连续签到额外加成: 连续天数 -> 倍率
+  streak-bonus:
+    3: 1.5
+    7: 2.0
+    15: 3.0
+    30: 5.0
+  # 断签判定(小时), 超过该时间视为断签
+  reset-hours: 48
+  # 签到是否给公会资金
+  guild-money: 0.0
+
+# ---------------- 公会聊天 ----------------
+chat:
+  # 聊天格式
+  format: '<dark_gray>[</dark_gray><gradient:#00d2ff:#3a7bd5><bold>公会</bold></gradient><dark_gray>]</dark_gray> <gray>{role}</gray> <white>{player}</white> <dark_gray>»</dark_gray> <white>{message}</white>'
+  # 快捷发送前缀, 例如 !你好  发送到公会频道; 留空则关闭
+  quick-prefix: '!'
+  # 是否允许管理员使用 /zg chat spy 查看所有公会聊天
+  spy-enabled: true
+
+# ---------------- 活跃度 ----------------
+active:
+  # 玩家在线每分钟为公会增加的活跃
+  per-minute-online: 1
+  # 每个自然月 1 日 0 点重置月度活跃
+  monthly-reset: true
+
+# ---------------- 排行榜 ----------------
+top:
+  # 排行榜显示数量
+  size: 10
+
+# ---------------- 自动备份 ----------------
+backup:
+  enabled: true
+  # 备份间隔(小时)
+  interval-hours: 24
+  # 保留份数
+  keep: 7
+
+# ---------------- 其他 ----------------
+settings:
+  # 调试模式, 输出更多日志
+  debug: false
+  # 是否启用 PlaceholderAPI 变量
+  placeholderapi: true
+  # 玩家加入服务器时提示所在公会
+  join-reminder: true
+  # 无公会玩家加入时的提示
+  join-reminder-no-guild: true
+  # 公会名在聊天中是否显示称号前缀
+  chat-show-tag: true

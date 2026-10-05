@@ -1,0 +1,384 @@
+# ============================================================
+#  ZHMguild GUI 配置文件
+#  说明:
+#    material   : Bukkit 材质名, 例如 DIAMOND / PLAYER_HEAD
+#    name/lore  : MiniMessage 格式, 支持 {xxx} 占位符
+#    slot       : 物品所在格子 (从 0 开始)
+#  修改后使用 /zg reload 生效
+# ============================================================
+
+# ---------------- 通用按钮 ----------------
+common:
+  filler:
+    material: GRAY_STAINED_GLASS_PANE
+    name: ' '
+  back:
+    slot: 49
+    material: ARROW
+    name: '<yellow>返回</yellow>'
+    lore:
+      - '<gray>返回上一级菜单</gray>'
+  close:
+    slot: 53
+    material: BARRIER
+    name: '<red>关闭</red>'
+    lore:
+      - '<gray>关闭当前界面</gray>'
+  previous:
+    slot: 45
+    material: SPECTRAL_ARROW
+    name: '<yellow>上一页</yellow>'
+    lore:
+      - '<gray>当前第 <white>{page}</white> / <white>{pages}</white> 页</gray>'
+  next:
+    slot: 53
+    material: SPECTRAL_ARROW
+    name: '<yellow>下一页</yellow>'
+    lore:
+      - '<gray>当前第 <white>{page}</white> / <white>{pages}</white> 页</gray>'
+
+# ---------------- 未加入公会 ----------------
+no-guild:
+  title: '<dark_gray>公会</dark_gray> <gray>»</gray> <yellow>未加入公会</yellow>'
+  size: 27
+  items:
+    create:
+      slot: 11
+      material: EMERALD_BLOCK
+      name: '<green>创建公会</green>'
+      lore:
+        - '<gray>花费 <yellow>{create_money}</yellow> 金币创建属于你的公会</gray>'
+        - '<gray>当前金币: <yellow>{balance}</yellow></gray>'
+        - ''
+        - '<yellow>» 点击创建</yellow>'
+    list:
+      slot: 13
+      material: BOOK
+      name: '<aqua>公会列表</aqua>'
+      lore:
+        - '<gray>查看服务器中的所有公会</gray>'
+        - '<gray>当前共有 <yellow>{total}</yellow> 个公会</gray>'
+        - ''
+        - '<yellow>» 点击查看</yellow>'
+    top:
+      slot: 15
+      material: GOLDEN_HELMET
+      name: '<gold>公会排行</gold>'
+      lore:
+        - '<gray>查看最强大的公会</gray>'
+        - ''
+        - '<yellow>» 点击查看</yellow>'
+
+# ---------------- 我的公会 ----------------
+main:
+  title: '<dark_gray>我的公会</dark_gray> <gray>»</gray> <yellow>{guild}</yellow>'
+  size: 54
+  items:
+    info:
+      slot: 4
+      material: NETHER_STAR
+      name: '<gradient:#00d2ff:#3a7bd5><bold>{guild}</bold></gradient>'
+      lore:
+        - '<gray>会长: <yellow>{leader}</yellow></gray>'
+        - '<gray>等级: <yellow>{level}</yellow> <dark_gray>|</dark_gray> <gray>称号: {tag}</gray>'
+        - '<gray>成员: <yellow>{members}</yellow><dark_gray>/</dark_gray><yellow>{max_members}</yellow></gray>'
+        - '<gray>活跃: <yellow>{active}</yellow> <dark_gray>|</dark_gray> <gray>月度活跃: <yellow>{month_active}</yellow></gray>'
+        - '<gray>资金: <yellow>{funds}</yellow></gray>'
+        - '<gray>创建于: <yellow>{create_time}</yellow></gray>'
+        - ''
+        - '<gray>公告: <white>{notice}</white></gray>'
+    members:
+      slot: 19
+      material: PLAYER_HEAD
+      name: '<aqua>成员列表</aqua>'
+      lore:
+        - '<gray>查看公会中的 <yellow>{members}</yellow> 名成员</gray>'
+        - ''
+        - '<yellow>» 点击查看</yellow>'
+    applications:
+      slot: 20
+      material: PAPER
+      name: '<green>入会申请</green>'
+      lore:
+        - '<gray>待处理申请: <yellow>{applications}</yellow></gray>'
+        - ''
+        - '<yellow>» 点击查看</yellow>'
+    upgrade:
+      slot: 21
+      material: EXPERIENCE_BOTTLE
+      name: '<light_purple>升级公会</light_purple>'
+      lore:
+        - '<gray>当前等级: <yellow>{level}</yellow></gray>'
+        - '<gray>升级需要资金: <yellow>{up_money}</yellow></gray>'
+        - '<gray>升级需要活跃: <yellow>{up_active}</yellow></gray>'
+        - ''
+        - '<yellow>» 点击升级</yellow>'
+    home:
+      slot: 22
+      material: RED_BED
+      name: '<gold>公会主城</gold>'
+      lore:
+        - '<gray>位置: <yellow>{home}</yellow></gray>'
+        - ''
+        - '<yellow>» 左键传送</yellow>'
+        - '<yellow>» 潜行左键设置主城</yellow>'
+    signin:
+      slot: 23
+      material: CLOCK
+      name: '<yellow>每日签到</yellow>'
+      lore:
+        - '<gray>连续签到: <yellow>{streak}</yellow> 天</gray>'
+        - '<gray>今日奖励: <yellow>{reward_money}</yellow> 金币 + <yellow>{reward_contribution}</yellow> 贡献</gray>'
+        - ''
+        - '<yellow>» 点击签到</yellow>'
+    contribute:
+      slot: 24
+      material: GOLD_INGOT
+      name: '<gold>贡献公会</gold>'
+      lore:
+        - '<gray>把你的金币贡献给公会</gray>'
+        - '<gray>你的贡献值: <yellow>{contribution}</yellow></gray>'
+        - ''
+        - '<yellow>» 左键贡献 {contribute_1} 金币</yellow>'
+        - '<yellow>» 右键贡献 {contribute_2} 金币</yellow>'
+        - '<yellow>» 潜行左键贡献 {contribute_3} 金币</yellow>'
+    list:
+      slot: 25
+      material: BOOK
+      name: '<aqua>公会列表</aqua>'
+      lore:
+        - '<gray>查看服务器中的所有公会</gray>'
+        - ''
+        - '<yellow>» 点击查看</yellow>'
+    settings:
+      slot: 30
+      material: COMPARATOR
+      name: '<yellow>公会设置</yellow>'
+      lore:
+        - '<gray>修改公告 / 名称 / 图标 / PVP</gray>'
+        - ''
+        - '<yellow>» 点击进入</yellow>'
+    chat:
+      slot: 31
+      material: WRITABLE_BOOK
+      name: '<white>公会聊天</white>'
+      lore:
+        - '<gray>切换公会聊天频道</gray>'
+        - '<gray>当前状态: <yellow>{chat_status}</yellow></gray>'
+        - ''
+        - '<yellow>» 点击切换</yellow>'
+    top:
+      slot: 32
+      material: GOLDEN_HELMET
+      name: '<gold>公会排行</gold>'
+      lore:
+        - '<gray>查看服务器最强公会</gray>'
+        - ''
+        - '<yellow>» 点击查看</yellow>'
+    leave:
+      slot: 40
+      material: IRON_DOOR
+      name: '<red>退出公会</red>'
+      lore:
+        - '<gray>离开当前公会</gray>'
+        - ''
+        - '<yellow>» 点击退出</yellow>'
+
+# ---------------- 公会列表 ----------------
+guild-list:
+  title: '<dark_gray>公会列表</dark_gray> <gray>»</gray> <yellow>{sort}</yellow>'
+  size: 54
+  info:
+    slot: 4
+    material: COMPASS
+    name: '<aqua>排序方式: <yellow>{sort}</yellow></aqua>'
+    lore:
+      - '<gray>点击切换排序方式</gray>'
+      - '<gray>当前共 <yellow>{total}</yellow> 个公会</gray>'
+  guild-item:
+    material: WHITE_BANNER
+    name: '<yellow>{guild}</yellow> <dark_gray>|</dark_gray> <gray>{level} 级</gray>'
+    lore:
+      - '<gray>会长: <yellow>{leader}</yellow></gray>'
+      - '<gray>成员: <yellow>{members}</yellow><dark_gray>/</dark_gray><yellow>{max_members}</yellow></gray>'
+      - '<gray>等级: <yellow>{level}</yellow> <dark_gray>|</dark_gray> <gray>活跃: <yellow>{active}</yellow></gray>'
+      - '<gray>资金: <yellow>{funds}</yellow></gray>'
+      - ''
+      - '<yellow>» 左键申请加入</yellow>'
+      - '<gray>申请状态: {apply_status}</gray>'
+
+# ---------------- 成员列表 ----------------
+members:
+  title: '<dark_gray>成员列表</dark_gray> <gray>»</gray> <yellow>{guild}</yellow>'
+  size: 54
+  member-item:
+    material: PLAYER_HEAD
+    name: '<yellow>{player}</yellow> <dark_gray>|</dark_gray> <gray>{role}</gray>'
+    lore:
+      - '<gray>职位: <yellow>{role}</yellow></gray>'
+      - '<gray>贡献: <yellow>{contribution}</yellow></gray>'
+      - '<gray>入会时间: <yellow>{join_time}</yellow></gray>'
+      - '<gray>最后签到: <yellow>{last_signin}</yellow></gray>'
+      - '<gray>在线状态: {online}</gray>'
+      - ''
+      - '<yellow>» 点击管理该成员</yellow>'
+
+# ---------------- 成员管理 ----------------
+member-manage:
+  title: '<dark_gray>成员管理</dark_gray> <gray>»</gray> <yellow>{player}</yellow>'
+  size: 27
+  items:
+    info:
+      slot: 4
+      material: PLAYER_HEAD
+      name: '<yellow>{player}</yellow>'
+      lore:
+        - '<gray>职位: <yellow>{role}</yellow></gray>'
+        - '<gray>贡献: <yellow>{contribution}</yellow></gray>'
+    promote:
+      slot: 11
+      material: LIME_DYE
+      name: '<green>提升职位</green>'
+      lore:
+        - '<gray>当前: <yellow>{role}</yellow></gray>'
+        - '<gray>下一级: <yellow>{next_role}</yellow></gray>'
+        - ''
+        - '<yellow>» 点击提升</yellow>'
+    demote:
+      slot: 13
+      material: GRAY_DYE
+      name: '<yellow>降低职位</yellow>'
+      lore:
+        - '<gray>当前: <yellow>{role}</yellow></gray>'
+        - '<gray>下一级: <yellow>{next_role}</yellow></gray>'
+        - ''
+        - '<yellow>» 点击降低</yellow>'
+    transfer:
+      slot: 14
+      material: GOLDEN_HELMET
+      name: '<gold>转让会长</gold>'
+      lore:
+        - '<gray>将该成员设为公会会长</gray>'
+        - '<red>此操作不可逆!</red>'
+        - ''
+        - '<yellow>» 点击转让</yellow>'
+    kick:
+      slot: 15
+      material: IRON_SWORD
+      name: '<red>踢出公会</red>'
+      lore:
+        - '<gray>将该成员踢出公会</gray>'
+        - ''
+        - '<yellow>» 点击踢出</yellow>'
+
+# ---------------- 入会申请 ----------------
+applications:
+  title: '<dark_gray>入会申请</dark_gray> <gray>»</gray> <yellow>{guild}</yellow>'
+  size: 54
+  application-item:
+    material: PAPER
+    name: '<yellow>{player}</yellow> <dark_gray>|</dark_gray> <gray>{type}</gray>'
+    lore:
+      - '<gray>类型: <yellow>{type}</yellow></gray>'
+      - '<gray>申请时间: <yellow>{time}</yellow></gray>'
+      - ''
+      - '<green>» 左键同意</green>'
+      - '<red>» 右键拒绝</red>'
+
+# ---------------- 公会设置 ----------------
+settings:
+  title: '<dark_gray>公会设置</dark_gray> <gray>»</gray> <yellow>{guild}</yellow>'
+  size: 27
+  items:
+    rename:
+      slot: 10
+      material: NAME_TAG
+      name: '<yellow>修改公会名称</yellow>'
+      lore:
+        - '<gray>当前名称: <yellow>{guild}</yellow></gray>'
+        - '<gray>修改需要花费 <yellow>{rename_cost}</yellow> 金币</gray>'
+        - ''
+        - '<yellow>» 点击修改</yellow>'
+    notice:
+      slot: 11
+      material: WRITABLE_BOOK
+      name: '<yellow>修改公会公告</yellow>'
+      lore:
+        - '<gray>当前公告: <white>{notice}</white></gray>'
+        - ''
+        - '<yellow>» 点击修改</yellow>'
+    icon:
+      slot: 12
+      material: ITEM_FRAME
+      name: '<yellow>修改公会图标</yellow>'
+      lore:
+        - '<gray>手持物品点击以设置为公会图标</gray>'
+        - ''
+        - '<yellow>» 点击设置</yellow>'
+    pvp:
+      slot: 13
+      material: DIAMOND_SWORD
+      name: '<yellow>公会 PVP</yellow>'
+      lore:
+        - '<gray>当前状态: <yellow>{pvp_status}</yellow></gray>'
+        - '<gray>开启后公会成员之间可以互相攻击</gray>'
+        - ''
+        - '<yellow>» 点击切换</yellow>'
+    info:
+      slot: 15
+      material: NETHER_STAR
+      name: '<aqua>公会信息</aqua>'
+      lore:
+        - '<gray>查看公会详细信息</gray>'
+        - ''
+        - '<yellow>» 点击查看</yellow>'
+    dissolve:
+      slot: 16
+      material: TNT
+      name: '<dark_red>解散公会</dark_red>'
+      lore:
+        - '<red>解散后所有数据将被清空!</red>'
+        - '<red>此操作不可逆!</red>'
+        - ''
+        - '<yellow>» 点击解散</yellow>'
+
+# ---------------- 公会排行 ----------------
+top:
+  title: '<dark_gray>公会排行</dark_gray> <gray>»</gray> <yellow>{sort}</yellow>'
+  size: 54
+  entry-item:
+    material: GOLDEN_HELMET
+    name: '<yellow>#{rank}</yellow> <dark_gray>|</dark_gray> <yellow>{guild}</yellow>'
+    lore:
+      - '<gray>会长: <yellow>{leader}</yellow></gray>'
+      - '<gray>等级: <yellow>{level}</yellow></gray>'
+      - '<gray>成员: <yellow>{members}</yellow></gray>'
+      - '<gray>活跃: <yellow>{active}</yellow></gray>'
+      - '<gray>资金: <yellow>{funds}</yellow></gray>'
+  sorts:
+    - 'LEVEL'
+    - 'ACTIVE'
+    - 'FUNDS'
+    - 'MEMBERS'
+
+# ---------------- 通用确认界面 ----------------
+confirm:
+  title: '<dark_gray>确认操作</dark_gray>'
+  size: 27
+  items:
+    confirm:
+      slot: 11
+      material: LIME_CONCRETE
+      name: '<green>确认</green>'
+      lore:
+        - '<gray>{message}</gray>'
+        - ''
+        - '<yellow>» 点击确认</yellow>'
+    cancel:
+      slot: 15
+      material: RED_CONCRETE
+      name: '<red>取消</red>'
+      lore:
+        - '<gray>放弃该操作</gray>'
+        - ''
+        - '<yellow>» 点击取消</yellow>'

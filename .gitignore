@@ -1,0 +1,36 @@
+# ---- Maven ----
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+dependency-reduced-pom.xml
+
+# ---- IDE ----
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+nbproject/
+*.swp
+
+# ---- 操作系统 ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- 运行与测试产物 ----
+run/
+logs/
+*.log
+*.db
+*.db-journal
+backUp/
+
+# ---- 本地测试服务端 ----
+plugins/
+server/
