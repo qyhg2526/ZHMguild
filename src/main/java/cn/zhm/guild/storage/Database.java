@@ -112,7 +112,6 @@ public class Database {
                 + "id " + autoIncrementPk() + ", "
                 + "name VARCHAR(64) NOT NULL, "
                 + "name_lower VARCHAR(64) NOT NULL, "
-                + "tag VARCHAR(128) DEFAULT '', "
                 + "icon VARCHAR(64) DEFAULT 'WHITE_BANNER', "
                 + "leader CHAR(36) NOT NULL, "
                 + "leader_name VARCHAR(32) DEFAULT '', "

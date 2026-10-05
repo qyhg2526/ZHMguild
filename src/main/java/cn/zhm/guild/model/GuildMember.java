@@ -14,8 +14,6 @@ public class GuildMember {
     private long joinTime;
     private long lastSignIn;
     private int signStreak;
-    /** 是否开启了公会聊天频道(仅内存, 不持久化)。 */
-    private transient boolean chatToggled;
 
     public GuildMember(UUID uuid, String name, GuildRole role, double contribution, long joinTime) {
         this.uuid = uuid;
@@ -79,14 +77,6 @@ public class GuildMember {
 
     public void setSignStreak(int signStreak) {
         this.signStreak = Math.max(0, signStreak);
-    }
-
-    public boolean isChatToggled() {
-        return chatToggled;
-    }
-
-    public void setChatToggled(boolean chatToggled) {
-        this.chatToggled = chatToggled;
     }
 
     public boolean isLeader() {

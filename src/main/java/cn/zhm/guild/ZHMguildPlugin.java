@@ -10,13 +10,15 @@ import cn.zhm.guild.hook.EconomyHook;
 import cn.zhm.guild.hook.PlaceholderHook;
 import cn.zhm.guild.hook.PointsHook;
 import cn.zhm.guild.listener.ChatListener;
+import cn.zhm.guild.listener.GuildWarListener;
 import cn.zhm.guild.listener.PlayerListener;
+import cn.zhm.guild.manager.ArenaManager;
 import cn.zhm.guild.manager.BackupManager;
 import cn.zhm.guild.manager.ChatInputManager;
 import cn.zhm.guild.manager.ConfirmManager;
 import cn.zhm.guild.manager.GuildActions;
-import cn.zhm.guild.manager.GuildChatManager;
 import cn.zhm.guild.manager.GuildManager;
+import cn.zhm.guild.manager.GuildWarManager;
 import cn.zhm.guild.manager.TeleportManager;
 import cn.zhm.guild.storage.Database;
 import cn.zhm.guild.storage.GuildStorage;
@@ -41,7 +43,8 @@ public class ZHMguildPlugin extends JavaPlugin {
     private GuildStorage storage;
     private GuildManager guildManager;
     private GuildActions guildActions;
-    private GuildChatManager guildChatManager;
+    private ArenaManager arenaManager;
+    private GuildWarManager guildWarManager;
     private GuiManager guiManager;
 
     private EconomyHook economyHook;
@@ -82,7 +85,9 @@ public class ZHMguildPlugin extends JavaPlugin {
         guildManager = new GuildManager(this);
         guildManager.loadAll();
         guildActions = new GuildActions(this);
-        guildChatManager = new GuildChatManager(this);
+        arenaManager = new ArenaManager(this);
+        arenaManager.load();
+        guildWarManager = new GuildWarManager(this);
         guiManager = new GuiManager(this);
 
         economyHook = new EconomyHook(this);
@@ -107,10 +112,12 @@ public class ZHMguildPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new GuiListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
+        getServer().getPluginManager().registerEvents(new GuildWarListener(this), this);
 
         loadDataFile();
         setupPlaceholderApi();
         startTasks();
+        guildWarManager.start();
 
         getLogger().info("ZHMguild 启用完成! 存储类型: " + (database.isMysql() ? "MySQL" : "SQLite")
                 + ", 经济: " + (economyHook.isEnabled() ? "Vault" : "未启用")
@@ -120,6 +127,9 @@ public class ZHMguildPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (guildWarManager != null) {
+            guildWarManager.shutdown();
+        }
         if (teleportManager != null) {
             teleportManager.cancelAll();
         }
@@ -172,6 +182,14 @@ public class ZHMguildPlugin extends JavaPlugin {
         } catch (Exception exception) {
             getLogger().warning("保存 data.yml 失败: " + exception.getMessage());
         }
+    }
+
+    public YamlConfiguration getDataConfig() {
+        return dataConfig;
+    }
+
+    public void saveData() {
+        saveDataFile();
     }
 
     private void startTasks() {
@@ -261,8 +279,12 @@ public class ZHMguildPlugin extends JavaPlugin {
         return guildActions;
     }
 
-    public GuildChatManager getGuildChatManager() {
-        return guildChatManager;
+    public ArenaManager getArenaManager() {
+        return arenaManager;
+    }
+
+    public GuildWarManager getGuildWarManager() {
+        return guildWarManager;
     }
 
     public GuiManager getGuiManager() {

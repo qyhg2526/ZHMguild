@@ -20,7 +20,6 @@ public class Guild {
 
     private int id;
     private String name;
-    private String tag;
     private String icon;
     private UUID leader;
     private String leaderName;
@@ -62,14 +61,6 @@ public class Guild {
 
     public String getNameLower() {
         return name == null ? "" : name.toLowerCase();
-    }
-
-    public String getTag() {
-        return tag == null ? "" : tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
     }
 
     public String getIcon() {

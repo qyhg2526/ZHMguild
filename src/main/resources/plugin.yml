@@ -39,7 +39,6 @@ permissions:
       zhmguild.editGuildName: true
       zhmguild.me: true
       zhmguild.signIn: true
-      zhmguild.chat: true
       zhmguild.contribute: true
       zhmguild.view: true
       zhmguild.give: true
@@ -57,6 +56,10 @@ permissions:
       zhmguild.kick: true
       zhmguild.transfer: true
       zhmguild.notice: true
+      zhmguild.war: true
+      zhmguild.warStart: true
+      zhmguild.warStop: true
+      zhmguild.setLocation: true
   zhmguild.use:
     description: 允许使用公会基础功能
     default: true
@@ -105,9 +108,18 @@ permissions:
   zhmguild.signIn:
     description: 公会每日签到
     default: true
-  zhmguild.chat:
-    description: 使用公会聊天
+  zhmguild.war:
+    description: 发起 / 取消匹配公会战
     default: true
+  zhmguild.warStart:
+    description: 管理员强制开启公会战
+    default: op
+  zhmguild.warStop:
+    description: 管理员强制结束公会战
+    default: op
+  zhmguild.setLocation:
+    description: 设置公会战场地出生点
+    default: op
   zhmguild.contribute:
     description: 向公会贡献
     default: true

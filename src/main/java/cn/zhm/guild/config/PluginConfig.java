@@ -68,17 +68,27 @@ public class PluginConfig {
     private int signInResetHours = 48;
     private final Map<Integer, Double> streakBonus = new LinkedHashMap<>();
 
-    // chat
-    private String chatFormat = "<dark_gray>[公会]</dark_gray> <gray>{role}</gray> <white>{player}</white> <dark_gray>»</dark_gray> <white>{message}</white>";
-    private String chatQuickPrefix = "!";
-    private boolean chatSpyEnabled = true;
-
     // active
     private int activePerMinuteOnline = 1;
     private boolean monthlyReset = true;
 
     // top
     private int topSize = 10;
+
+    // guild war
+    private boolean guildWarEnabled = true;
+    private int guildWarDailyLimit = 3;
+    private int guildWarMaxPerSide = 10;
+    private int guildWarPrepareSeconds = 30;
+    private int guildWarBattleSeconds = 600;
+    private boolean guildWarKeepInventory = true;
+    private boolean guildWarBlockDrop = true;
+    private boolean guildWarDisableFly = true;
+    private List<String> guildWarBlockedCommands = new ArrayList<>();
+    private WarReward guildWarWinReward = WarReward.empty();
+    private WarReward guildWarLoseReward = WarReward.empty();
+    private WarReward guildWarDrawReward = WarReward.empty();
+    private WarReward guildWarPerKillReward = WarReward.empty();
 
     // backup
     private boolean backupEnabled = true;
@@ -90,7 +100,6 @@ public class PluginConfig {
     private boolean placeholderApi = true;
     private boolean joinReminder = true;
     private boolean joinReminderNoGuild = true;
-    private boolean chatShowTag = true;
 
     // roles
     private final Map<GuildRole, String> roleDisplay = new EnumMap<>(GuildRole.class);
@@ -158,8 +167,7 @@ public class PluginConfig {
                 levels.put(level, new LevelDef(
                         Math.max(1, section.getInt("max-members", defaultMaxMembers)),
                         section.getDouble("up-money", 0.0D),
-                        section.getInt("up-active", 0),
-                        section.getString("tag", "")
+                        section.getInt("up-active", 0)
                 ));
             }
         }
@@ -188,14 +196,24 @@ public class PluginConfig {
             }
         }
 
-        chatFormat = cfg.getString("chat.format", chatFormat);
-        chatQuickPrefix = cfg.getString("chat.quick-prefix", "!");
-        chatSpyEnabled = cfg.getBoolean("chat.spy-enabled", true);
-
         activePerMinuteOnline = cfg.getInt("active.per-minute-online", 1);
         monthlyReset = cfg.getBoolean("active.monthly-reset", true);
 
         topSize = Math.max(1, cfg.getInt("top.size", 10));
+
+        guildWarEnabled = cfg.getBoolean("guild-war.enabled", true);
+        guildWarDailyLimit = Math.max(0, cfg.getInt("guild-war.daily-limit", 3));
+        guildWarMaxPerSide = Math.max(1, cfg.getInt("guild-war.max-players-per-side", 10));
+        guildWarPrepareSeconds = Math.max(0, cfg.getInt("guild-war.prepare-seconds", 30));
+        guildWarBattleSeconds = Math.max(0, cfg.getInt("guild-war.battle-seconds", 600));
+        guildWarKeepInventory = cfg.getBoolean("guild-war.keep-inventory", true);
+        guildWarBlockDrop = cfg.getBoolean("guild-war.block-drop", true);
+        guildWarDisableFly = cfg.getBoolean("guild-war.disable-fly", true);
+        guildWarBlockedCommands = cfg.getStringList("guild-war.blocked-commands");
+        guildWarWinReward = readReward(cfg, "guild-war.rewards.win");
+        guildWarLoseReward = readReward(cfg, "guild-war.rewards.lose");
+        guildWarDrawReward = readReward(cfg, "guild-war.rewards.draw");
+        guildWarPerKillReward = readReward(cfg, "guild-war.rewards.per-kill");
 
         backupEnabled = cfg.getBoolean("backup.enabled", true);
         backupIntervalHours = Math.max(1, cfg.getInt("backup.interval-hours", 24));
@@ -205,7 +223,6 @@ public class PluginConfig {
         placeholderApi = cfg.getBoolean("settings.placeholderapi", true);
         joinReminder = cfg.getBoolean("settings.join-reminder", true);
         joinReminderNoGuild = cfg.getBoolean("settings.join-reminder-no-guild", true);
-        chatShowTag = cfg.getBoolean("settings.chat-show-tag", true);
 
         for (GuildRole role : GuildRole.values()) {
             String display = cfg.getString("roles." + role.name());
@@ -216,7 +233,7 @@ public class PluginConfig {
     /** 取指定等级配置, 超出配置范围时取最高一级。 */
     public LevelDef levelDef(int level) {
         if (levels.isEmpty()) {
-            return new LevelDef(defaultMaxMembers, 0.0D, 0, "");
+            return new LevelDef(defaultMaxMembers, 0.0D, 0);
         }
         LevelDef def = levels.get(level);
         if (def != null) {
@@ -227,7 +244,7 @@ public class PluginConfig {
                 .max(Map.Entry.comparingByKey())
                 .map(Map.Entry::getValue)
                 .orElseGet(() -> levels.entrySet().stream().min(Map.Entry.comparingByKey()).map(Map.Entry::getValue).orElse(
-                        new LevelDef(defaultMaxMembers, 0.0D, 0, "")));
+                        new LevelDef(defaultMaxMembers, 0.0D, 0)));
     }
 
     public int maxMembersFor(int level) {
@@ -404,18 +421,6 @@ public class PluginConfig {
         return streakBonus;
     }
 
-    public String chatFormat() {
-        return chatFormat;
-    }
-
-    public String chatQuickPrefix() {
-        return chatQuickPrefix;
-    }
-
-    public boolean chatSpyEnabled() {
-        return chatSpyEnabled;
-    }
-
     public int activePerMinuteOnline() {
         return activePerMinuteOnline;
     }
@@ -456,7 +461,67 @@ public class PluginConfig {
         return joinReminderNoGuild;
     }
 
-    public boolean chatShowTag() {
-        return chatShowTag;
+    public boolean guildWarEnabled() {
+        return guildWarEnabled;
+    }
+
+    public int guildWarDailyLimit() {
+        return guildWarDailyLimit;
+    }
+
+    public int guildWarMaxPerSide() {
+        return guildWarMaxPerSide;
+    }
+
+    public int guildWarPrepareSeconds() {
+        return guildWarPrepareSeconds;
+    }
+
+    public int guildWarBattleSeconds() {
+        return guildWarBattleSeconds;
+    }
+
+    public boolean guildWarKeepInventory() {
+        return guildWarKeepInventory;
+    }
+
+    public boolean guildWarBlockDrop() {
+        return guildWarBlockDrop;
+    }
+
+    public boolean guildWarDisableFly() {
+        return guildWarDisableFly;
+    }
+
+    public List<String> guildWarBlockedCommands() {
+        return guildWarBlockedCommands;
+    }
+
+    public WarReward guildWarWinReward() {
+        return guildWarWinReward;
+    }
+
+    public WarReward guildWarLoseReward() {
+        return guildWarLoseReward;
+    }
+
+    public WarReward guildWarDrawReward() {
+        return guildWarDrawReward;
+    }
+
+    public WarReward guildWarPerKillReward() {
+        return guildWarPerKillReward;
+    }
+
+    private WarReward readReward(FileConfiguration cfg, String path) {
+        if (cfg.getConfigurationSection(path) == null) {
+            return WarReward.empty();
+        }
+        return new WarReward(
+                cfg.getDouble(path + ".contribution", 0.0D),
+                cfg.getInt(path + ".guild-active", 0),
+                cfg.getDouble(path + ".guild-funds", 0.0D),
+                new ArrayList<>(cfg.getStringList(path + ".commands"))
+        );
     }
 }

@@ -4,7 +4,7 @@
 #    material   : Bukkit 材质名, 例如 DIAMOND / PLAYER_HEAD
 #    name/lore  : MiniMessage 格式, 支持 {xxx} 占位符
 #    slot       : 物品所在格子 (从 0 开始)
-#  修改后使用 /zg reload 生效
+#  修改后使用 /zg reload 生效, 可用 /zg debug 自检
 # ============================================================
 
 # ---------------- 通用按钮 ----------------
@@ -48,7 +48,7 @@ no-guild:
       name: '<green>创建公会</green>'
       lore:
         - '<gray>花费 <yellow>{create_money}</yellow> 金币创建属于你的公会</gray>'
-        - '<gray>当前金币: <yellow>{balance}</yellow></gray>'
+        - '<gray>当前余额: <yellow>{balance}</yellow></gray>'
         - ''
         - '<yellow>» 点击创建</yellow>'
     list:
@@ -80,7 +80,7 @@ main:
       name: '<gradient:#00d2ff:#3a7bd5><bold>{guild}</bold></gradient>'
       lore:
         - '<gray>会长: <yellow>{leader}</yellow></gray>'
-        - '<gray>等级: <yellow>{level}</yellow> <dark_gray>|</dark_gray> <gray>称号: {tag}</gray>'
+        - '<gray>等级: <yellow>{level}</yellow></gray>'
         - '<gray>成员: <yellow>{members}</yellow><dark_gray>/</dark_gray><yellow>{max_members}</yellow></gray>'
         - '<gray>活跃: <yellow>{active}</yellow> <dark_gray>|</dark_gray> <gray>月度活跃: <yellow>{month_active}</yellow></gray>'
         - '<gray>资金: <yellow>{funds}</yellow></gray>'
@@ -141,7 +141,6 @@ main:
         - ''
         - '<yellow>» 左键贡献 {contribute_1} 金币</yellow>'
         - '<yellow>» 右键贡献 {contribute_2} 金币</yellow>'
-        - '<yellow>» 潜行左键贡献 {contribute_3} 金币</yellow>'
     list:
       slot: 25
       material: BOOK
@@ -158,15 +157,15 @@ main:
         - '<gray>修改公告 / 名称 / 图标 / PVP</gray>'
         - ''
         - '<yellow>» 点击进入</yellow>'
-    chat:
+    war:
       slot: 31
-      material: WRITABLE_BOOK
-      name: '<white>公会聊天</white>'
+      material: DIAMOND_SWORD
+      name: '<red>匹配公会战</red>'
       lore:
-        - '<gray>切换公会聊天频道</gray>'
-        - '<gray>当前状态: <yellow>{chat_status}</yellow></gray>'
+        - '<gray>与其他公会一决高下</gray>'
+        - '<gray>当前状态: {war_status}</gray>'
         - ''
-        - '<yellow>» 点击切换</yellow>'
+        - '<yellow>» 点击进入公会战</yellow>'
     top:
       slot: 32
       material: GOLDEN_HELMET
@@ -183,6 +182,50 @@ main:
         - '<gray>离开当前公会</gray>'
         - ''
         - '<yellow>» 点击退出</yellow>'
+
+# ---------------- 匹配公会战 ----------------
+guild-war:
+  title: '<dark_gray>匹配公会战</dark_gray> <gray>»</gray> <yellow>{guild}</yellow>'
+  size: 27
+  items:
+    info:
+      slot: 4
+      material: DIAMOND_SWORD
+      name: '<red>匹配公会战</red>'
+      lore:
+        - '<gray>当前状态: {war_status}</gray>'
+        - '<gray>队列中公会: <yellow>{queue_size}</yellow></gray>'
+        - '<gray>今日剩余次数: {daily_left} <dark_gray>({daily_used}/{daily_limit})</dark_gray></gray>'
+        - '<gray>可参战成员: <yellow>{online_members}</yellow><dark_gray>/</dark_gray><yellow>{max_per_side}</yellow></gray>'
+        - ''
+        - '<gray>场地: {arenas}</gray>'
+    match:
+      slot: 11
+      material: LIME_CONCRETE
+      name: '<green>开始匹配</green>'
+      lore:
+        - '<gray>加入匹配队列</gray>'
+        - '<gray>队列满 2 个公会后自动开战</gray>'
+        - '<gray>准备阶段 <yellow>{prepare_seconds}</yellow> 秒, 战斗 <yellow>{battle_seconds}</yellow> 秒</gray>'
+        - ''
+        - '<yellow>» 点击开始匹配</yellow>'
+    cancel:
+      slot: 13
+      material: RED_CONCRETE
+      name: '<red>取消匹配</red>'
+      lore:
+        - '<gray>把公会移出匹配队列</gray>'
+        - ''
+        - '<yellow>» 点击取消匹配</yellow>'
+    leave:
+      slot: 15
+      material: IRON_DOOR
+      name: '<yellow>离开战斗</yellow>'
+      lore:
+        - '<gray>准备阶段可无损失退出</gray>'
+        - '<gray>战斗阶段退出视为被淘汰</gray>'
+        - ''
+        - '<yellow>» 点击离开</yellow>'
 
 # ---------------- 公会列表 ----------------
 guild-list:
@@ -215,7 +258,7 @@ members:
     material: PLAYER_HEAD
     name: '<yellow>{player}</yellow> <dark_gray>|</dark_gray> <gray>{role}</gray>'
     lore:
-      - '<gray>职位: <yellow>{role}</yellow></gray>'
+      - '<gray>职位: {role}</gray>'
       - '<gray>贡献: <yellow>{contribution}</yellow></gray>'
       - '<gray>入会时间: <yellow>{join_time}</yellow></gray>'
       - '<gray>最后签到: <yellow>{last_signin}</yellow></gray>'
@@ -233,14 +276,14 @@ member-manage:
       material: PLAYER_HEAD
       name: '<yellow>{player}</yellow>'
       lore:
-        - '<gray>职位: <yellow>{role}</yellow></gray>'
+        - '<gray>职位: {role}</gray>'
         - '<gray>贡献: <yellow>{contribution}</yellow></gray>'
     promote:
       slot: 11
       material: LIME_DYE
       name: '<green>提升职位</green>'
       lore:
-        - '<gray>当前: <yellow>{role}</yellow></gray>'
+        - '<gray>当前: {role}</gray>'
         - '<gray>下一级: <yellow>{next_role}</yellow></gray>'
         - ''
         - '<yellow>» 点击提升</yellow>'
@@ -249,8 +292,7 @@ member-manage:
       material: GRAY_DYE
       name: '<yellow>降低职位</yellow>'
       lore:
-        - '<gray>当前: <yellow>{role}</yellow></gray>'
-        - '<gray>下一级: <yellow>{next_role}</yellow></gray>'
+        - '<gray>当前: {role}</gray>'
         - ''
         - '<yellow>» 点击降低</yellow>'
     transfer:
@@ -320,7 +362,7 @@ settings:
       material: DIAMOND_SWORD
       name: '<yellow>公会 PVP</yellow>'
       lore:
-        - '<gray>当前状态: <yellow>{pvp_status}</yellow></gray>'
+        - '<gray>当前状态: {pvp_status}</gray>'
         - '<gray>开启后公会成员之间可以互相攻击</gray>'
         - ''
         - '<yellow>» 点击切换</yellow>'

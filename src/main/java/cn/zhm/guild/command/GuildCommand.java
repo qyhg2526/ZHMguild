@@ -1,11 +1,14 @@
 package cn.zhm.guild.command;
 
 import cn.zhm.guild.ZHMguildPlugin;
+import cn.zhm.guild.manager.ArenaManager;
 import cn.zhm.guild.model.ApplicationType;
+import cn.zhm.guild.model.Arena;
 import cn.zhm.guild.model.Guild;
 import cn.zhm.guild.model.GuildApplication;
 import cn.zhm.guild.model.GuildMember;
 import cn.zhm.guild.model.GuildRole;
+import cn.zhm.guild.model.GuildWar;
 import cn.zhm.guild.model.SortType;
 import cn.zhm.guild.util.Placeholders;
 import cn.zhm.guild.util.Text;
@@ -61,7 +64,6 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
                 case "up", "upgrade" -> up(sender);
                 case "spawn", "home" -> spawn(sender);
                 case "sethome", "setspawn" -> setSpawn(sender);
-                case "chat", "c" -> chat(sender, args);
                 case "signin", "sign" -> signIn(sender);
                 case "contribute", "donate" -> contribute(sender, args);
                 case "top", "rank" -> top(sender, args);
@@ -87,8 +89,9 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
                 case "refresh" -> refresh(sender, args);
                 case "clear" -> clear(sender, args);
                 case "reward" -> reward(sender, args);
-                case "spy" -> spy(sender);
                 case "debug" -> debug(sender, args);
+                case "setlocation" -> setLocation(sender, args);
+                case "war", "guildwar" -> war(sender, args);
                 default -> plugin.getMessages().send(sender, "common.unknown-command");
             }
         } catch (Exception exception) {
@@ -151,12 +154,14 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
         listHelp(sender, "/zg up", "升级公会", null);
         listHelp(sender, "/zg spawn", "传送回公会主城", null);
         listHelp(sender, "/zg sethome", "设置公会主城", null);
-        listHelp(sender, "/zg chat [内容]", "公会聊天 / 切换频道", null);
         listHelp(sender, "/zg signin", "每日签到", null);
         listHelp(sender, "/zg contribute <数量>", "向公会贡献金币", null);
         listHelp(sender, "/zg members", "查看公会成员", null);
         listHelp(sender, "/zg info [公会名]", "查看公会信息", null);
         listHelp(sender, "/zg top [排序]", "查看公会排行", null);
+        listHelp(sender, "/zg war", "匹配公会战界面", null);
+        listHelp(sender, "/zg war match|cancel", "发起 / 取消公会战匹配", null);
+        listHelp(sender, "/zg war status", "查看公会战状态", null);
         listHelp(sender, "/zg notice <内容>", "修改公会公告", null);
         listHelp(sender, "/zg kick <玩家>", "踢出成员", null);
         listHelp(sender, "/zg promote|demote <玩家>", "调整成员职位", null);
@@ -174,7 +179,11 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
             listHelp(sender, "/zg refresh [公会名]", "刷新公会数据", null);
             listHelp(sender, "/zg clear <application|guild>", "清理数据", null);
             listHelp(sender, "/zg reward <类型> <玩家> <数量>", "发放奖励", null);
-            listHelp(sender, "/zg spy", "监听公会聊天", null);
+            listHelp(sender, "/zg setLocation mate <场地名> <1|2|3>", "设置公会战场地出生点", null);
+            listHelp(sender, "/zg war list", "查看全部公会战场地", null);
+            listHelp(sender, "/zg war start <红队> <蓝队> [场地]", "强制开战", null);
+            listHelp(sender, "/zg war queue|unqueue <公会名>", "强制入队 / 出队", null);
+            listHelp(sender, "/zg war stop [all|ID]", "强制结束公会战", null);
             listHelp(sender, "/zg debug", "自检 GUI 配置与运行状态", null);
         }
         plugin.getMessages().sendRaw(sender, "help.footer", null);
@@ -429,25 +438,6 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
         plugin.getGuildActions().setHome(player, guild, member);
     }
 
-    private void chat(CommandSender sender, String[] args) {
-        Player player = asPlayer(sender);
-        if (player == null || !has(sender, "zhmguild.chat")) {
-            return;
-        }
-        Guild guild = plugin.getGuildManager().getGuildByPlayer(player.getUniqueId());
-        GuildMember member = plugin.getGuildManager().getMember(player.getUniqueId());
-        if (guild == null || member == null) {
-            plugin.getMessages().send(sender, "common.not-in-guild");
-            return;
-        }
-        if (args.length < 2) {
-            plugin.getGuildActions().toggleChat(player, member);
-            return;
-        }
-        plugin.getGuildChatManager().send(player, guild, member,
-                String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
-    }
-
     private void signIn(CommandSender sender) {
         Player player = asPlayer(sender);
         if (player == null || !has(sender, "zhmguild.signIn")) {
@@ -535,8 +525,7 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
                 : home.getWorld().getName() + " " + (int) home.getX() + "," + (int) home.getY() + "," + (int) home.getZ();
         plugin.getMessages().sendRaw(sender, "admin.view-header", Placeholders.of().put("guild", guild.getName()));
         sender.sendMessage(plugin.getMessages().parse("<gray>会长: <yellow>" + guild.getLeaderName() + "</yellow></gray>", sender));
-        sender.sendMessage(plugin.getMessages().parse("<gray>等级: <yellow>" + guild.getLevel()
-                + "</yellow> | 称号: " + plugin.getGuildManager().renderTag(guild) + "</gray>", sender));
+        sender.sendMessage(plugin.getMessages().parse("<gray>等级: <yellow>" + guild.getLevel() + "</yellow></gray>", sender));
         sender.sendMessage(plugin.getMessages().parse("<gray>成员: <yellow>" + guild.getMemberCount() + "</yellow>/<yellow>"
                 + plugin.getGuildManager().maxMembers(guild) + "</yellow> | 活跃: <yellow>" + guild.getActive()
                 + "</yellow> | 月度活跃: <yellow>" + guild.getMonthActive() + "</yellow></gray>", sender));
@@ -710,12 +699,275 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
         plugin.getMessages().send(sender, "common.cancelled");
     }
 
-    private void spy(CommandSender sender) {
-        Player player = asPlayer(sender);
-        if (player == null || !has(sender, "zhmguild.view")) {
+    // ---------------------------------------------------------
+    // 公会战
+    // ---------------------------------------------------------
+
+    /**
+     * 设置公会战场地出生点。
+     * <p>用法: /zg setLocation mate &lt;场地名&gt; &lt;1|2|3&gt;
+     * 1 = 红队出生点, 2 = 蓝队出生点, 3 = 观看点(可选)。</p>
+     */
+    private void setLocation(CommandSender sender, String[] args) {
+        if (!has(sender, "zhmguild.setLocation")) {
             return;
         }
-        plugin.getGuildChatManager().toggleSpy(player);
+        Player player = asPlayer(sender);
+        if (player == null) {
+            return;
+        }
+        if (args.length < 3) {
+            usage(sender, "/zg setLocation mate <场地名> <1|2|3>");
+            return;
+        }
+        // 兼容带类型(mate)与不带类型两种写法
+        int offset = "mate".equalsIgnoreCase(args[1]) || "season".equalsIgnoreCase(args[1]) ? 2 : 1;
+        if (args.length < offset + 2) {
+            usage(sender, "/zg setLocation mate <场地名> <1|2|3>");
+            return;
+        }
+        if (offset == 2 && !"mate".equalsIgnoreCase(args[1])) {
+            plugin.getMessages().send(sender, "war.only-mate");
+            return;
+        }
+        String arenaName = args[offset];
+        String indexRaw = args[offset + 1];
+        int index;
+        if ("观看点".equals(indexRaw) || "spectate".equalsIgnoreCase(indexRaw)) {
+            index = ArenaManager.SPECTATE;
+        } else {
+            try {
+                index = Integer.parseInt(indexRaw);
+            } catch (NumberFormatException exception) {
+                usage(sender, "/zg setLocation mate <场地名> <1|2|3>");
+                return;
+            }
+        }
+        if (index < 1 || index > 3) {
+            usage(sender, "/zg setLocation mate <场地名> <1|2|3>");
+            return;
+        }
+        plugin.getArenaManager().setSpawn(arenaName, index, player.getLocation());
+        plugin.getMessages().send(sender, "war.arena-set", Placeholders.of()
+                .put("arena", arenaName)
+                .put("part", switch (index) {
+                    case ArenaManager.RED -> "红队出生点";
+                    case ArenaManager.BLUE -> "蓝队出生点";
+                    default -> "观看点";
+                })
+                .put("world", player.getWorld().getName())
+                .put("x", (int) player.getLocation().getX())
+                .put("y", (int) player.getLocation().getY())
+                .put("z", (int) player.getLocation().getZ()));
+    }
+
+    /** /zg war 子命令。 */
+    private void war(CommandSender sender, String[] args) {
+        String action = args.length > 1 ? args[1].toLowerCase(Locale.ROOT) : "";
+        switch (action) {
+            case "" -> {
+                if (sender instanceof Player player) {
+                    plugin.getGuiManager().openGuildWar(player);
+                } else {
+                    warStatus(sender);
+                }
+            }
+            case "match" -> warMatch(sender);
+            case "cancel" -> warCancel(sender);
+            case "leave", "quit" -> warLeave(sender);
+            case "status", "info" -> warStatus(sender);
+            case "list", "arenas" -> warList(sender);
+            case "stop" -> warStop(sender, args);
+            case "start", "force" -> warForceStart(sender, args);
+            case "queue" -> warQueueAdmin(sender, args, true);
+            case "unqueue" -> warQueueAdmin(sender, args, false);
+            default -> usage(sender, "/zg war <match|cancel|leave|status|list>");
+        }
+    }
+
+    private void warMatch(CommandSender sender) {
+        Player player = asPlayer(sender);
+        if (player == null || !has(sender, "zhmguild.war")) {
+            return;
+        }
+        Guild guild = plugin.getGuildManager().getGuildByPlayer(player.getUniqueId());
+        GuildMember member = plugin.getGuildManager().getMember(player.getUniqueId());
+        if (guild == null || member == null) {
+            plugin.getMessages().send(sender, "common.not-in-guild");
+            return;
+        }
+        if (!member.getRole().atLeast(GuildRole.VICE)) {
+            plugin.getMessages().send(sender, "common.no-permission-in-guild", Placeholders.of()
+                    .putRaw("role", plugin.getConfigManager().roleDisplay(GuildRole.VICE)));
+            return;
+        }
+        plugin.getGuildWarManager().enqueue(guild, sender);
+    }
+
+    private void warCancel(CommandSender sender) {
+        Player player = asPlayer(sender);
+        if (player == null || !has(sender, "zhmguild.war")) {
+            return;
+        }
+        Guild guild = plugin.getGuildManager().getGuildByPlayer(player.getUniqueId());
+        GuildMember member = plugin.getGuildManager().getMember(player.getUniqueId());
+        if (guild == null || member == null) {
+            plugin.getMessages().send(sender, "common.not-in-guild");
+            return;
+        }
+        if (!member.getRole().atLeast(GuildRole.VICE)) {
+            plugin.getMessages().send(sender, "common.no-permission-in-guild", Placeholders.of()
+                    .putRaw("role", plugin.getConfigManager().roleDisplay(GuildRole.VICE)));
+            return;
+        }
+        plugin.getGuildWarManager().dequeue(guild, sender);
+    }
+
+    private void warLeave(CommandSender sender) {
+        Player player = asPlayer(sender);
+        if (player == null) {
+            return;
+        }
+        plugin.getGuildWarManager().leave(player);
+    }
+
+    private void warStatus(CommandSender sender) {
+        Guild guild = sender instanceof Player player
+                ? plugin.getGuildManager().getGuildByPlayer(player.getUniqueId())
+                : null;
+        if (guild == null && sender instanceof Player) {
+            plugin.getMessages().send(sender, "common.not-in-guild");
+            return;
+        }
+        plugin.getMessages().send(sender, "war.status-header");
+        if (guild != null) {
+            sender.sendMessage(plugin.getMessages().parse("<gray>我的公会: <yellow>" + guild.getName()
+                    + "</yellow> | 状态: " + plugin.getGuildWarManager().statusText(guild)
+                    + " | 今日剩余: <yellow>" + plugin.getGuildWarManager().remainingToday(guild)
+                    + "</yellow></gray>", sender));
+        }
+        sender.sendMessage(plugin.getMessages().parse("<gray>匹配队列: <yellow>"
+                + plugin.getGuildWarManager().queueSize() + "</yellow> 个公会 | 进行中战斗: <yellow>"
+                + plugin.getGuildWarManager().getWars().size() + "</yellow> 场</gray>", sender));
+        for (GuildWar war : plugin.getGuildWarManager().getWars()) {
+            sender.sendMessage(plugin.getMessages().parse("<gray>  #" + war.getId() + " <red>"
+                    + war.getRedGuild().getName() + "</red> vs <blue>" + war.getBlueGuild().getName()
+                    + "</blue> @ " + war.getArena().getName() + " | " + war.getState()
+                    + " | 剩余 " + war.remainingSeconds() + "s | 存活 "
+                    + war.aliveCount(GuildWar.Side.RED) + " vs " + war.aliveCount(GuildWar.Side.BLUE)
+                    + " | 击杀 " + war.getKills(GuildWar.Side.RED) + " vs " + war.getKills(GuildWar.Side.BLUE)
+                    + "</gray>", sender));
+        }
+    }
+
+    private void warList(CommandSender sender) {
+        if (!has(sender, "zhmguild.view")) {
+            return;
+        }
+        plugin.getMessages().send(sender, "war.arena-header");
+        if (plugin.getArenaManager().size() == 0) {
+            sender.sendMessage(plugin.getMessages().parse("<gray>  暂无场地, 使用 <yellow>/zg setLocation mate <场地名> 1</yellow> 创建</gray>", sender));
+            return;
+        }
+        for (Arena arena : plugin.getArenaManager().getArenas()) {
+            String state = arena.isInUse() ? "<red>使用中</red>" : arena.isReady() ? "<green>空闲</green>" : "<yellow>缺少出生点</yellow>";
+            sender.sendMessage(plugin.getMessages().parse("<gray>  <yellow>" + arena.getName() + "</yellow> - "
+                    + state + (arena.hasSpectate() ? " <gray>+观看点</gray>" : "") + "</gray>", sender));
+        }
+    }
+
+    private void warStop(CommandSender sender, String[] args) {
+        if (!has(sender, "zhmguild.warStop")) {
+            return;
+        }
+        if (args.length > 2 && "all".equalsIgnoreCase(args[2])) {
+            int count = plugin.getGuildWarManager().stopAll(sender);
+            if (count > 0) {
+                plugin.getMessages().send(sender, "war.stopped-count", Placeholders.of().put("count", count));
+            }
+            return;
+        }
+        if (args.length > 2) {
+            int id;
+            try {
+                id = Integer.parseInt(args[2]);
+            } catch (NumberFormatException exception) {
+                usage(sender, "/zg war stop [all|战斗ID]");
+                return;
+            }
+            GuildWar war = plugin.getGuildWarManager().getWar(id);
+            if (war == null) {
+                plugin.getMessages().send(sender, "war.none-running");
+                return;
+            }
+            plugin.getGuildWarManager().stopWar(war, sender);
+            return;
+        }
+        if (plugin.getGuildWarManager().getWars().isEmpty()) {
+            plugin.getMessages().send(sender, "war.none-running");
+            return;
+        }
+        int count = plugin.getGuildWarManager().stopAll(sender);
+        plugin.getMessages().send(sender, "war.stopped-count", Placeholders.of().put("count", count));
+    }
+
+    /** 管理员强制开战: /zg war start <红队公会> <蓝队公会> [场地名] */
+    private void warForceStart(CommandSender sender, String[] args) {
+        if (!has(sender, "zhmguild.warStart")) {
+            return;
+        }
+        if (args.length < 4) {
+            usage(sender, "/zg war start <红队公会> <蓝队公会> [场地名]");
+            return;
+        }
+        Guild red = plugin.getGuildManager().getGuildByName(args[2]);
+        Guild blue = plugin.getGuildManager().getGuildByName(args[3]);
+        if (red == null) {
+            plugin.getMessages().send(sender, "common.guild-not-found", Placeholders.of().put("guild", args[2]));
+            return;
+        }
+        if (blue == null) {
+            plugin.getMessages().send(sender, "common.guild-not-found", Placeholders.of().put("guild", args[3]));
+            return;
+        }
+        Arena arena = args.length > 4 ? plugin.getArenaManager().get(args[4]) : plugin.getArenaManager().findAvailable();
+        if (arena == null) {
+            plugin.getMessages().send(sender, "war.no-arena");
+            return;
+        }
+        if (plugin.getGuildWarManager().startWar(red, blue, arena, sender) != null) {
+            plugin.getMessages().send(sender, "war.force-started", Placeholders.of()
+                    .put("red", red.getName())
+                    .put("blue", blue.getName())
+                    .put("arena", arena.getName()));
+        }
+    }
+
+    /** 管理员代替公会入队 / 出队: /zg war queue|unqueue <公会名> */
+    private void warQueueAdmin(CommandSender sender, String[] args, boolean enqueue) {
+        if (!has(sender, "zhmguild.warStart")) {
+            return;
+        }
+        if (args.length < 3) {
+            usage(sender, "/zg war " + (enqueue ? "queue" : "unqueue") + " <公会名>");
+            return;
+        }
+        Guild guild = plugin.getGuildManager().getGuildByName(args[2]);
+        if (guild == null) {
+            plugin.getMessages().send(sender, "common.guild-not-found", Placeholders.of().put("guild", args[2]));
+            return;
+        }
+        if (enqueue) {
+            if (plugin.getGuildWarManager().enqueue(guild, sender, true)) {
+                plugin.getMessages().send(sender, "war.force-queued", Placeholders.of()
+                        .put("guild", guild.getName())
+                        .put("count", plugin.getGuildWarManager().queueSize()));
+            }
+        } else {
+            if (plugin.getGuildWarManager().dequeue(guild, sender)) {
+                plugin.getMessages().send(sender, "war.force-unqueued", Placeholders.of().put("guild", guild.getName()));
+            }
+        }
     }
 
     /** 自检: GUI 配置 / 运行状态。 */
@@ -1006,7 +1258,6 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
         } else {
             guild.setLevel(guild.getLevel() + 1);
         }
-        guild.setTag(plugin.getGuildManager().levelTag(guild.getLevel()));
         plugin.getGuildManager().saveGuild(guild);
         plugin.getMessages().send(sender, "admin.level-set", Placeholders.of()
                 .put("guild", guild.getName())
@@ -1124,12 +1375,13 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
 
     private static final List<String> SUB_COMMANDS = List.of(
             "help", "open", "me", "create", "join", "accept", "deny", "invitation", "leave", "up",
-            "spawn", "sethome", "chat", "signin", "contribute", "top", "members", "info", "notice",
-            "kick", "promote", "demote", "transfer", "pvp", "dissolve", "confirm", "cancel");
+            "spawn", "sethome", "signin", "contribute", "top", "members", "info", "notice",
+            "kick", "promote", "demote", "transfer", "pvp", "dissolve", "confirm", "cancel", "war");
 
     private static final List<String> ADMIN_COMMANDS = List.of(
             "reload", "view", "give", "take", "set", "adminCreate", "adminEditGuildName", "setRole",
-            "adminUp", "refresh", "clear", "reward", "spy", "debug");
+            "adminUp", "refresh", "clear", "reward", "debug", "setLocation");
+    private static final List<String> WAR_ACTIONS = List.of("match", "cancel", "leave", "status", "list");
 
     private static final List<String> MODIFY_TYPES = List.of("guildMoney", "guildActive", "guildOre", "player");
     private static final List<String> SORTS = List.of("LEVEL", "ACTIVE", "MONTH_ACTIVE", "FUNDS", "MEMBERS", "CREATE_TIME");
@@ -1214,6 +1466,34 @@ public class GuildCommand implements CommandExecutor, TabCompleter {
             case "clear" -> {
                 if (args.length == 2) {
                     List.of("application", "guild").stream().filter(name -> name.startsWith(prefix)).forEach(result::add);
+                }
+            }
+            case "war", "guildwar" -> {
+                if (args.length == 2) {
+                    WAR_ACTIONS.stream().filter(name -> name.startsWith(prefix)).forEach(result::add);
+                    if (sender.hasPermission("zhmguild.admin")) {
+                        List.of("start", "stop", "queue", "unqueue").stream().filter(name -> name.startsWith(prefix)).forEach(result::add);
+                    }
+                } else if (args.length == 3 && ("start".equalsIgnoreCase(args[1]) || "stop".equalsIgnoreCase(args[1])
+                        || "queue".equalsIgnoreCase(args[1]) || "unqueue".equalsIgnoreCase(args[1]))) {
+                    plugin.getGuildManager().getGuilds().stream().map(Guild::getName)
+                            .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(prefix)).forEach(result::add);
+                } else if (args.length == 4 && "start".equalsIgnoreCase(args[1])) {
+                    plugin.getGuildManager().getGuilds().stream().map(Guild::getName)
+                            .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(prefix)).forEach(result::add);
+                } else if (args.length >= 5 && "start".equalsIgnoreCase(args[1])) {
+                    plugin.getArenaManager().names().stream()
+                            .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(prefix)).forEach(result::add);
+                }
+            }
+            case "setlocation" -> {
+                if (args.length == 2) {
+                    List.of("mate").stream().filter(name -> name.startsWith(prefix)).forEach(result::add);
+                } else if (args.length == 3) {
+                    plugin.getArenaManager().names().stream()
+                            .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(prefix)).forEach(result::add);
+                } else if (args.length == 4) {
+                    List.of("1", "2", "3").stream().filter(name -> name.startsWith(prefix)).forEach(result::add);
                 }
             }
             case "reward" -> {

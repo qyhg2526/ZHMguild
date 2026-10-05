@@ -515,17 +515,6 @@ public class GuildActions {
         return true;
     }
 
-    /** 切换公会聊天频道。 */
-    public boolean toggleChat(Player player, GuildMember member) {
-        if (member == null) {
-            plugin.getMessages().send(player, "common.not-in-guild");
-            return false;
-        }
-        member.setChatToggled(!member.isChatToggled());
-        plugin.getMessages().send(player, member.isChatToggled() ? "chat.toggled-on" : "chat.toggled-off");
-        return true;
-    }
-
     // ---------------------------------------------------------
     // 工具
     // ---------------------------------------------------------

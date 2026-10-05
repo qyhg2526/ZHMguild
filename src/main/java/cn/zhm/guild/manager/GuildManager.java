@@ -82,9 +82,6 @@ public class GuildManager {
                 playerIndex.put(guild.getLeader(), guild);
             }
             maxId = Math.max(maxId, guild.getId());
-            if (guild.getTag() == null || guild.getTag().isEmpty()) {
-                guild.setTag(levelTag(guild.getLevel()));
-            }
             List<GuildMember> guildMembers = members.get(guild.getId());
             if (guildMembers != null) {
                 for (GuildMember member : guildMembers) {
@@ -248,25 +245,6 @@ public class GuildManager {
         return plugin.getConfigManager().maxMembersFor(guild.getLevel());
     }
 
-    /** 公会称号(带 {guild} 占位符替换)。 */
-    public String renderTag(Guild guild) {
-        if (guild == null) {
-            return "";
-        }
-        return Placeholders.of()
-                .put("guild", guild.getName())
-                .apply(guild.getTag());
-    }
-
-    public String levelTag(int level) {
-        LevelDef def = plugin.getConfigManager().levelDef(level);
-        String tag = def.tag();
-        if (tag == null || tag.isEmpty()) {
-            return plugin.getConfig().getString("levels.default-tag", "");
-        }
-        return tag;
-    }
-
     public List<Guild> sortedGuilds(SortType type) {
         List<Guild> list = new ArrayList<>(guilds.values());
         list.sort((type == null ? SortType.LEVEL : type).comparator());
@@ -404,7 +382,6 @@ public class GuildManager {
         }
 
         Guild guild = new Guild(nextId.getAndIncrement(), name);
-        guild.setTag(levelTag(1));
         guild.setLeader(owner);
         guild.setLeaderName(ownerName);
         guild.setCreateTime(now);
@@ -655,7 +632,6 @@ public class GuildManager {
         guild.setFunds(guild.getFunds() - money);
         guild.setActive(guild.getActive() - active);
         guild.setLevel(guild.getLevel() + 1);
-        guild.setTag(levelTag(guild.getLevel()));
         saveGuild(guild);
 
         Placeholders placeholders = Placeholders.of()
@@ -790,9 +766,6 @@ public class GuildManager {
             guild.setLeader(leaderMember.getUuid());
             guild.setLeaderName(leaderMember.getName());
             playerIndex.put(leaderMember.getUuid(), guild);
-        }
-        if (guild.getTag() == null || guild.getTag().isEmpty()) {
-            guild.setTag(levelTag(guild.getLevel()));
         }
         for (GuildMember member : guild.getMembers()) {
             memberIndex.put(member.getUuid(), member);

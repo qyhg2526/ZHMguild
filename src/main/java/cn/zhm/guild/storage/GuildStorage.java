@@ -47,7 +47,6 @@ public class GuildStorage {
              ResultSet rs = statement.executeQuery()) {
             while (rs.next()) {
                 Guild guild = new Guild(rs.getInt("id"), rs.getString("name"));
-                guild.setTag(rs.getString("tag"));
                 guild.setIcon(rs.getString("icon"));
                 guild.setLeaderName(rs.getString("leader_name"));
                 String leader = rs.getString("leader");
@@ -151,41 +150,40 @@ public class GuildStorage {
      */
     public boolean insertGuild(Guild guild) {
         String sql = "INSERT INTO " + database.guildTable()
-                + " (id, name, name_lower, tag, icon, leader, leader_name, create_time, level, active, month_active, funds, ore, notice, pvp,"
+                + " (id, name, name_lower, icon, leader, leader_name, create_time, level, active, month_active, funds, ore, notice, pvp,"
                 + " home_world, home_x, home_y, home_z, home_yaw, home_pitch)"
-                + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         try (Connection connection = database.connection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, guild.getId());
             statement.setString(2, guild.getName());
             statement.setString(3, guild.getNameLower());
-            statement.setString(4, guild.getTag());
-            statement.setString(5, guild.getIcon());
-            statement.setString(6, guild.getLeader() == null ? "" : guild.getLeader().toString());
-            statement.setString(7, guild.getLeaderName());
-            statement.setLong(8, guild.getCreateTime());
-            statement.setInt(9, guild.getLevel());
-            statement.setInt(10, guild.getActive());
-            statement.setInt(11, guild.getMonthActive());
-            statement.setDouble(12, guild.getFunds());
-            statement.setInt(13, guild.getOre());
-            statement.setString(14, guild.getNotice());
-            statement.setInt(15, guild.isPvp() ? 1 : 0);
+            statement.setString(4, guild.getIcon());
+            statement.setString(5, guild.getLeader() == null ? "" : guild.getLeader().toString());
+            statement.setString(6, guild.getLeaderName());
+            statement.setLong(7, guild.getCreateTime());
+            statement.setInt(8, guild.getLevel());
+            statement.setInt(9, guild.getActive());
+            statement.setInt(10, guild.getMonthActive());
+            statement.setDouble(11, guild.getFunds());
+            statement.setInt(12, guild.getOre());
+            statement.setString(13, guild.getNotice());
+            statement.setInt(14, guild.isPvp() ? 1 : 0);
             Location home = guild.getHome();
             if (home != null && home.getWorld() != null) {
-                statement.setString(16, home.getWorld().getName());
-                statement.setDouble(17, home.getX());
-                statement.setDouble(18, home.getY());
-                statement.setDouble(19, home.getZ());
-                statement.setDouble(20, home.getYaw());
-                statement.setDouble(21, home.getPitch());
+                statement.setString(15, home.getWorld().getName());
+                statement.setDouble(16, home.getX());
+                statement.setDouble(17, home.getY());
+                statement.setDouble(18, home.getZ());
+                statement.setDouble(19, home.getYaw());
+                statement.setDouble(20, home.getPitch());
             } else {
-                statement.setString(16, null);
+                statement.setString(15, null);
+                statement.setDouble(16, 0);
                 statement.setDouble(17, 0);
                 statement.setDouble(18, 0);
                 statement.setDouble(19, 0);
                 statement.setDouble(20, 0);
-                statement.setDouble(21, 0);
             }
             return statement.executeUpdate() > 0;
         } catch (SQLException exception) {
@@ -196,41 +194,40 @@ public class GuildStorage {
 
     public void updateGuild(Guild guild) {
         String sql = "UPDATE " + database.guildTable()
-                + " SET name=?, name_lower=?, tag=?, icon=?, leader=?, leader_name=?, level=?, active=?, month_active=?,"
+                + " SET name=?, name_lower=?, icon=?, leader=?, leader_name=?, level=?, active=?, month_active=?,"
                 + " funds=?, ore=?, notice=?, pvp=?, home_world=?, home_x=?, home_y=?, home_z=?, home_yaw=?, home_pitch=?"
                 + " WHERE id=?";
         try (Connection connection = database.connection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, guild.getName());
             statement.setString(2, guild.getNameLower());
-            statement.setString(3, guild.getTag());
-            statement.setString(4, guild.getIcon());
-            statement.setString(5, guild.getLeader() == null ? "" : guild.getLeader().toString());
-            statement.setString(6, guild.getLeaderName());
-            statement.setInt(7, guild.getLevel());
-            statement.setInt(8, guild.getActive());
-            statement.setInt(9, guild.getMonthActive());
-            statement.setDouble(10, guild.getFunds());
-            statement.setInt(11, guild.getOre());
-            statement.setString(12, guild.getNotice());
-            statement.setInt(13, guild.isPvp() ? 1 : 0);
+            statement.setString(3, guild.getIcon());
+            statement.setString(4, guild.getLeader() == null ? "" : guild.getLeader().toString());
+            statement.setString(5, guild.getLeaderName());
+            statement.setInt(6, guild.getLevel());
+            statement.setInt(7, guild.getActive());
+            statement.setInt(8, guild.getMonthActive());
+            statement.setDouble(9, guild.getFunds());
+            statement.setInt(10, guild.getOre());
+            statement.setString(11, guild.getNotice());
+            statement.setInt(12, guild.isPvp() ? 1 : 0);
             Location home = guild.getHome();
             if (home != null && home.getWorld() != null) {
-                statement.setString(14, home.getWorld().getName());
-                statement.setDouble(15, home.getX());
-                statement.setDouble(16, home.getY());
-                statement.setDouble(17, home.getZ());
-                statement.setDouble(18, home.getYaw());
-                statement.setDouble(19, home.getPitch());
+                statement.setString(13, home.getWorld().getName());
+                statement.setDouble(14, home.getX());
+                statement.setDouble(15, home.getY());
+                statement.setDouble(16, home.getZ());
+                statement.setDouble(17, home.getYaw());
+                statement.setDouble(18, home.getPitch());
             } else {
-                statement.setString(14, null);
+                statement.setString(13, null);
+                statement.setDouble(14, 0);
                 statement.setDouble(15, 0);
                 statement.setDouble(16, 0);
                 statement.setDouble(17, 0);
                 statement.setDouble(18, 0);
-                statement.setDouble(19, 0);
             }
-            statement.setInt(20, guild.getId());
+            statement.setInt(19, guild.getId());
             statement.executeUpdate();
         } catch (SQLException exception) {
             plugin.getLogger().log(Level.SEVERE, "更新公会记录失败: " + guild.getName(), exception);

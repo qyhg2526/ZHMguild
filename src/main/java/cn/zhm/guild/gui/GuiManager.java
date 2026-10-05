@@ -4,6 +4,7 @@ import cn.zhm.guild.ZHMguildPlugin;
 import cn.zhm.guild.gui.menu.ApplicationMenu;
 import cn.zhm.guild.gui.menu.ConfirmMenu;
 import cn.zhm.guild.gui.menu.GuildListMenu;
+import cn.zhm.guild.gui.menu.GuildWarMenu;
 import cn.zhm.guild.gui.menu.MainMenu;
 import cn.zhm.guild.gui.menu.MemberListMenu;
 import cn.zhm.guild.gui.menu.MemberManageMenu;
@@ -68,6 +69,10 @@ public class GuiManager {
 
     public void openSettings(Player player) {
         open(new SettingsMenu(plugin, player));
+    }
+
+    public void openGuildWar(Player player) {
+        open(new GuildWarMenu(plugin, player));
     }
 
     public void openTop(Player player, SortType sort, int page) {

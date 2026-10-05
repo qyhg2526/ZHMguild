@@ -57,7 +57,7 @@ public class PlayerListener implements Listener {
         plugin.getTeleportManager().cancel(uuid, false);
         plugin.getChatInputManager().cancel(uuid);
         plugin.getConfirmManager().cancel(uuid);
-        plugin.getGuildChatManager().removeSpy(uuid);
+        plugin.getGuildWarManager().handleQuit(event.getPlayer());
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -68,7 +68,7 @@ public class PlayerListener implements Listener {
         plugin.getTeleportManager().checkMove(event.getPlayer(), event.getTo());
     }
 
-    /** 同公会成员之间的 PVP 保护。 */
+    /** 同公会成员之间的 PVP 保护, 公会战期间的伤害由公会战规则优先判定。 */
     @EventHandler(ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player victim)) {
@@ -77,6 +77,18 @@ public class PlayerListener implements Listener {
         Player damager = resolveDamager(event);
         if (damager == null) {
             return;
+        }
+        switch (plugin.getGuildWarManager().damageRule(damager, victim)) {
+            case ALLOW -> {
+                return;
+            }
+            case DENY -> {
+                event.setCancelled(true);
+                return;
+            }
+            default -> {
+                // 继续走普通规则
+            }
         }
         Guild victimGuild = plugin.getGuildManager().getGuildByPlayer(victim.getUniqueId());
         if (victimGuild == null) {

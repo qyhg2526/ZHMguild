@@ -55,7 +55,6 @@ public class MainMenu extends Gui {
                 .put("guild", guild.getName())
                 .put("leader", guild.getLeaderName())
                 .put("level", guild.getLevel())
-                .putRaw("tag", plugin.getGuildManager().renderTag(guild))
                 .put("members", guild.getMemberCount())
                 .put("max_members", plugin.getGuildManager().maxMembers(guild))
                 .put("active", guild.getActive())
@@ -72,10 +71,9 @@ public class MainMenu extends Gui {
                 .put("reward_money", TimeUtil.money(plugin.getConfigManager().signInMoney()))
                 .put("reward_contribution", TimeUtil.money(plugin.getConfigManager().signInContribution()))
                 .put("contribution", TimeUtil.money(member.getContribution()))
-                .put("chat_status", member.isChatToggled() ? "<green>开启</green>" : "<red>关闭</red>")
                 .put("contribute_1", presets.size() > 0 ? TimeUtil.money(presets.get(0)) : "1000")
                 .put("contribute_2", presets.size() > 1 ? TimeUtil.money(presets.get(1)) : "10000")
-                .put("contribute_3", presets.size() > 2 ? TimeUtil.money(presets.get(2)) : "100000");
+                .putRaw("war_status", plugin.getGuildWarManager().statusText(guild));
 
         button("main", "info", GuiUtil.def(4, "NETHER_STAR", "<yellow>{guild}</yellow>",
                 "<gray>会长: <yellow>{leader}</yellow></gray>",
@@ -128,14 +126,12 @@ public class MainMenu extends Gui {
 
         button("main", "contribute", GuiUtil.def(24, "GOLD_INGOT", "<gold>贡献公会</gold>",
                         "<gray>你的贡献值: <yellow>{contribution}</yellow></gray>",
-                        "", "<yellow>» 左键贡献 {contribute_1} 金币</yellow>",
-                        "<yellow>» 右键贡献 {contribute_2} 金币</yellow>",
-                        "<yellow>» 潜行左键贡献 {contribute_3} 金币</yellow>"),
+                        "",
+                        "<yellow>» 左键贡献 {contribute_1} 金币</yellow>",
+                        "<yellow>» 右键贡献 {contribute_2} 金币</yellow>"),
                 placeholders, event -> {
                     double amount;
-                    if (event.isShiftClick()) {
-                        amount = presets.size() > 2 ? presets.get(2) : 100000.0D;
-                    } else if (event.isRightClick()) {
+                    if (event.isRightClick()) {
                         amount = presets.size() > 1 ? presets.get(1) : 10000.0D;
                     } else {
                         amount = presets.isEmpty() ? 1000.0D : presets.get(0);
@@ -161,13 +157,12 @@ public class MainMenu extends Gui {
                     }
                 });
 
-        button("main", "chat", GuiUtil.def(31, "WRITABLE_BOOK", "<white>公会聊天</white>",
-                        "<gray>当前状态: {chat_status}</gray>",
-                        "", "<yellow>» 点击切换</yellow>"),
-                placeholders, event -> {
-                    plugin.getGuildActions().toggleChat(viewer, member);
-                    refresh();
-                });
+        button("main", "war", GuiUtil.def(31, "DIAMOND_SWORD", "<red>匹配公会战</red>",
+                        "<gray>与其他公会一决高下</gray>",
+                        "<gray>当前状态: {war_status}</gray>",
+                        "",
+                        "<yellow>» 点击进入公会战</yellow>"),
+                placeholders, event -> plugin.getGuiManager().openGuildWar(viewer));
 
         button("main", "top", GuiUtil.def(32, "GOLDEN_HELMET", "<gold>公会排行</gold>",
                         "<gray>查看服务器最强公会</gray>",

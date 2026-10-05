@@ -96,7 +96,7 @@ public class GuiConfig {
 
     /** 全部菜单键。 */
     public static final List<String> MENUS = List.of(
-            "no-guild", "main", "guild-list", "members", "member-manage",
+            "no-guild", "main", "guild-war", "guild-list", "members", "member-manage",
             "applications", "settings", "top", "confirm");
 
     /** 模板与通用按钮路径。 */

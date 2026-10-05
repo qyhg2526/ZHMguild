@@ -86,8 +86,6 @@ public class PlaceholderHook extends PlaceholderExpansion {
                 return guild == null ? "false" : "true";
             case "name", "guild", "guild_name":
                 return guild == null ? "" : Text.legacy(guild.getName());
-            case "tag":
-                return guild == null ? "" : Text.legacy(renderTag(guild));
             case "level":
                 return guild == null ? "0" : String.valueOf(guild.getLevel());
             case "active":
@@ -148,11 +146,5 @@ public class PlaceholderHook extends PlaceholderExpansion {
             return "";
         }
         return Text.legacy(sorted.get(index - 1).getName());
-    }
-
-    private String renderTag(Guild guild) {
-        return Placeholders.of()
-                .put("guild", Text.escape(guild.getName()))
-                .apply(guild.getTag());
     }
 }
